@@ -195,19 +195,30 @@ def GET_vars():
     
     return CAT( 
             XML("GET parametrai paduodami per nuorodą. Išbandykite nuorodas ir žiūrėkite, kaip keičiasi adreso laukelis ir gauti kintamieji <br/> <br/>"),
-            DIV( "Gauti duomenys:", BEAUTIFY( duomenys ) if duomenys else "nieko"),
+            CAT( "Gauti duomenys: ", BEAUTIFY( duomenys ) if duomenys else "nieko..."),
 
             UL(
                 A(link1, _href=link1 ) , 
                 A(link2, _href=link2 ),
-                A(URL(), _href=URL() ) 
+                A(URL(), _href=URL() )  # tiesiog nuoroda, iškviečianti dabartinę valdiklio funkciją 
             )
         )
 
 
-# for fname in index(html=False):
-    # print fname
-    # fun = globals()[fname]
-    # print fun
-    # fun = show_code( fun )
-    # fun = show_menu( fun )
+@show_menu_and_code
+def FORM_POST_vars():
+    
+    duomenys = request.vars  
+    
+    form = FORM( 
+                INPUT(_name="kas"),     # duomenų įvedimo laukelis (pagal nutylėjimą,  _type="text")
+                INPUT(_type="submit", _value="OK")   # siuntio mygtukas
+           )
+    
+    return CAT( 
+            XML("POST parametrai paduodami per formos laukus. Įveskite ką nors... <br/> <br/>"),
+            CAT( "Gauti duomenys: ", BEAUTIFY( duomenys ) if duomenys else "nieko..."),
+
+            DIV("Forma: ", form)
+        )
+
