@@ -21,7 +21,7 @@ def index( html=True ):
 
 def show_code( f ):
     def result():
-        return PRE(
+        return CAT(
                     f(), 
                     SEMIHIDDEN_CONTENT("Kodas:", get_active_code(f) )
                 )
@@ -30,11 +30,14 @@ def show_code( f ):
 
 def show_menu( f ):
     def result():
-        return PRE(
-                f(), SEMIHIDDEN_CONTENT("Meniu:", index() ), 
+        return CAT(  
+                    f(), 
+                    SEMIHIDDEN_CONTENT("Meniu:", index() ), 
                )
     return result
 
+def show_code_and_menu( f ):
+    return show_menu(   show_code(  f  )  )
 
 def SEMIHIDDEN_CONTENT(name, content):
     js_toggle = """
@@ -46,15 +49,15 @@ def SEMIHIDDEN_CONTENT(name, content):
         SPAN( content, _style="display:none" )
     )
 
-def get_active_code(f=None):
-#     return BEAUTIFY( inspect.currentframe().f_code.co_varnames )
+def get_active_code(f=None):  
+    """Gets code of either the request.function (it it is the callee) or the provided function"""
     
     if f is None:
         name = inspect.currentframe().f_back.f_code.co_name
-        if request.function == name:
+        if request.function == name:  # if the callee is active function
             f = globals()[request.function]
         else:
-            return # we don't have info about function
+            return ""# we don't have info about function
     
 
     lines, start_line = inspect.getsourcelines( f ) 
@@ -64,8 +67,9 @@ def get_active_code(f=None):
     # remove some function calls from code
     code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code) 
     code = re.sub(r",\s*?index\(\s*?\)", "", code) 
-    code = re.sub(r"@show_menu", "", code) 
-    code = re.sub(r"@show_code", "", code) 
+    code = re.sub(r"^@show_.+?$", "", code, flags=re.MULTILINE) 
+    # code = re.sub(r"@show_menu", "", code) 
+    # code = re.sub(r"@show_code", "", code) 
     
     return  CODE(code, language="python", link='/examples/global/vars/', counter=start_line)
 
@@ -73,18 +77,17 @@ def get_active_code(f=None):
     
 
 
-@show_menu
-@show_code
-def HTML_helpers1():
-    return PRE( "labas ", B("pasauli")  )
-    
-@show_menu
-@show_code
-def HTML_helpers2():
-    return PRE( SPAN("labas ", _style="color:blue"), B("pasauli") )
 
-@show_menu
-@show_code
+@show_code_and_menu
+def HTML_helpers1():
+    return P( "labas ", B("pasauli")  )
+    
+@show_code_and_menu
+
+def HTML_helpers2():
+    return DIV( SPAN("labas ", _style="color:blue"), B("pasauli") )
+
+@show_code_and_menu
 def GET_vars():
     
     duomenys = request.vars  # request reiškia kreipimąsi į serverį. O "vars" -- atseit "variables" (pažodžiui būtų "kintamieji", bet realiai -- tiesiog duomenys su vardais) .
@@ -104,6 +107,9 @@ def GET_vars():
         )
 
 
-
-# for fun in index(html=False):
-    # fun = index_decorator( fun )
+# for fname in index(html=False):
+    # print fname
+    # fun = globals()[fname]
+    # print fun
+    # fun = show_code( fun )
+    # fun = show_menu( fun )
