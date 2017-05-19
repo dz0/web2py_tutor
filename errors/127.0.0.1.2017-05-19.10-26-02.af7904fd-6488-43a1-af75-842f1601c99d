@@ -1,0 +1,21 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.NameError'> global name 'safe_read' is not defined"
+p3
+sS'layer'
+p4
+S'/home/jurgis/dev/web2py_src/applications/tutor/controllers/lesson1.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n# try something like\nimport inspect\ndef get_active_code():\n#     return BEAUTIFY( inspect.currentframe().f_code.co_varnames )\n    name = inspect.currentframe().f_back.f_code.co_name\n    if request.function == name:\n        lines, start_line = inspect.getsourcelines( globals()[request.function] ) \n        code = inspect.getsource( globals()[request.function] ) \n        return    CAT(\n            "Kodas", \n            CODE(code, language="python", link=\'/examples/global/vars/\', counter=start_line)\n        )\n    \n\n\ndef HTML_helpers1():\n    return CAT( "labas", B("pasauli"), get_active_code()  )\n    \ndef HTML_helpers1():\n    return CAT( SPAN("labas", _style="color:blue"), B("pasauli"),  get_active_code() )\n\ndef GET_vars():\n    \n    duomenys = request.vars  # request rei\xc5\xa1kia kreipim\xc4\x85si \xc4\xaf server\xc4\xaf. O "vars" -- atseit "variables" (pa\xc5\xbeod\xc5\xbeiui b\xc5\xabt\xc5\xb3 "kintamieji", bet realiai -- tiesiog duomenys su vardais) .\n    \n    link1 = URL( vars={\'a\':5, \'b\':"labas" } ) \n    link2 = URL( vars={ \'z\':[1, 3, 5] } ) \n    \n    return CAT( \n        XML("GET parametrai paduodami per nuorod\xc4\x85. I\xc5\xa1bandykite nuorodas ir \xc5\xbei\xc5\xabr\xc4\x97kite, kaip kei\xc4\x8diasi adreso laukelis ir gauti kintamieji <br/> <br/>"),\n        DIV( "Gauti duomenys:", BEAUTIFY( duomenys ) if duomenys else "nieko"),\n\n        UL(\n            A(link1, _href=link1 ) , \n            A(link2, _href=link2 ),\n            A(URL(), _href=URL() ) \n        ), \n        get_active_code() \n        )\n\nfunctions =  locals()\n\ndef index(): \n    app = request.application\n    c = request.controller\n    data = safe_read(apath(\'%s/controllers/%s\' % (app, c), r=request))\n    items = find_exposed_functions(data)\n    return BEAUTIFY( items )\n\nresponse._vars=response._caller(index)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+sS'traceback'
+p10
+S'Traceback (most recent call last):\n  File "/home/jurgis/dev/web2py_src/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/home/jurgis/dev/web2py_src/applications/tutor/controllers/lesson1.py", line 51, in <module>\n  File "/home/jurgis/dev/web2py_src/gluon/globals.py", line 417, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/jurgis/dev/web2py_src/applications/tutor/controllers/lesson1.py", line 47, in index\n    data = safe_read(apath(\'%s/controllers/%s\' % (app, c), r=request))\nNameError: global name \'safe_read\' is not defined\n'
+p11
+s.
