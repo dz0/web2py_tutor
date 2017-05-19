@@ -3,7 +3,7 @@
 import inspect
 import re
 
-def index(): 
+def index( html=True ): 
     from gluon.admin import apath
     from gluon.compileapp import find_exposed_functions
     app = request.application
@@ -12,49 +12,79 @@ def index():
     data = open(fpath).read()
     
     items = find_exposed_functions(data)
-    items.remove( 'get_active_code' )
-    items.remove( 'index' )
-    
-    return UL( [item!=request.function and A(item, _href=URL(item)) or item    for item in items] )
+    if 'get_active_code' in items:    items.remove( 'get_active_code' )
+    # items.remove( 'index' )
+    if html:
+        return UL( [item!=request.function and A(item, _href=URL(item)) or item    for item in items] )
+    else:
+        return items
+
+def show_code( f ):
+    def result():
+        return PRE(
+                    f(), 
+                    SEMIHIDDEN_CONTENT("Kodas:", get_active_code(f) )
+                )
+        
+    return result
+
+def show_menu( f ):
+    def result():
+        return PRE(
+                f(), SEMIHIDDEN_CONTENT("Meniu:", index() ), 
+               )
+    return result
 
 
-def get_active_code():
+def SEMIHIDDEN_CONTENT(name, content):
+    js_toggle = """
+    d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = d=='block'? 'none': 'block';
+    """
+    return CAT( 
+        BR(),
+        SPAN( name, _onclick=js_toggle, _style="cursor:hand"),
+        SPAN( content, _style="display:none" )
+    )
+
+def get_active_code(f=None):
 #     return BEAUTIFY( inspect.currentframe().f_code.co_varnames )
-    def SEMIHIDDEN_CONTENT(name, content):
-        js_toggle = """
-        d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = d=='block'? 'none': 'block';
-        """
-        return CAT( 
-            BR(),
-            SPAN( name, _onclick=js_toggle, _style="cursor:hand"),
-            SPAN( content, _style="display:none" )
-        )
-    name = inspect.currentframe().f_back.f_code.co_name
-    if request.function == name:
-        lines, start_line = inspect.getsourcelines( globals()[request.function] ) 
-        code = inspect.getsource( globals()[request.function] ) 
-        
-        # remove some function calls from code
-        code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code) 
-        code = re.sub(r",\s*?index\(\s*?\)", "", code) 
-        
-        return    DIV(
-             
-            SEMIHIDDEN_CONTENT(
-                "Kodas:", 
-                CODE(code, language="python", link='/examples/global/vars/', counter=start_line)
-            ),            
-            SEMIHIDDEN_CONTENT("Meniu:", index() )
-        )
+    
+    if f is None:
+        name = inspect.currentframe().f_back.f_code.co_name
+        if request.function == name:
+            f = globals()[request.function]
+        else:
+            return # we don't have info about function
+    
+
+    lines, start_line = inspect.getsourcelines( f ) 
+    # code = inspect.getsource( f ) 
+    code = ''.join( lines )
+    
+    # remove some function calls from code
+    code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code) 
+    code = re.sub(r",\s*?index\(\s*?\)", "", code) 
+    code = re.sub(r"@show_menu", "", code) 
+    code = re.sub(r"@show_code", "", code) 
+    
+    return  CODE(code, language="python", link='/examples/global/vars/', counter=start_line)
+
+    
     
 
 
+@show_menu
+@show_code
 def HTML_helpers1():
-    return PRE( "labas ", B("pasauli"), get_active_code()  )
+    return PRE( "labas ", B("pasauli")  )
     
+@show_menu
+@show_code
 def HTML_helpers2():
-    return PRE( SPAN("labas ", _style="color:blue"), B("pasauli"),  get_active_code() )
+    return PRE( SPAN("labas ", _style="color:blue"), B("pasauli") )
 
+@show_menu
+@show_code
 def GET_vars():
     
     duomenys = request.vars  # request reiškia kreipimąsi į serverį. O "vars" -- atseit "variables" (pažodžiui būtų "kintamieji", bet realiai -- tiesiog duomenys su vardais) .
@@ -63,14 +93,17 @@ def GET_vars():
     link2 = URL( vars={ 'z':[1, 3, 5] } ) 
     
     return CAT( 
-        XML("GET parametrai paduodami per nuorodą. Išbandykite nuorodas ir žiūrėkite, kaip keičiasi adreso laukelis ir gauti kintamieji <br/> <br/>"),
-        DIV( "Gauti duomenys:", BEAUTIFY( duomenys ) if duomenys else "nieko"),
+            XML("GET parametrai paduodami per nuorodą. Išbandykite nuorodas ir žiūrėkite, kaip keičiasi adreso laukelis ir gauti kintamieji <br/> <br/>"),
+            DIV( "Gauti duomenys:", BEAUTIFY( duomenys ) if duomenys else "nieko"),
 
-        UL(
-            A(link1, _href=link1 ) , 
-            A(link2, _href=link2 ),
-            A(URL(), _href=URL() ) 
-        ), 
-        get_active_code() 
+            UL(
+                A(link1, _href=link1 ) , 
+                A(link2, _href=link2 ),
+                A(URL(), _href=URL() ) 
+            )
         )
 
+
+
+# for fun in index(html=False):
+    # fun = index_decorator( fun )
