@@ -1,0 +1,37 @@
+<head>
+{{include 'web2py_ajax.html'}} 
+
+{{block head}}
+{{
+    CMROOT="/admin/static/codemirror"
+    # CMROOT="http://codemirror.net"
+    
+}}
+  <link rel="stylesheet" href="{{=CMROOT}}/lib/codemirror.css">
+    <script src="{{=CMROOT}}/lib/codemirror.js"></script>
+    <script src="{{=CMROOT}}/addon/edit/matchbrackets.js"></script>
+    
+    <script src="{{=CMROOT}}/mode/python/python.js"></script>
+    <style> 
+
+        .CodeMirror { height: auto; border: 1px solid #ddd; }
+        
+        .CodeMirror-scroll { max-height: 200px; } 
+        .CodeMirror-scroll { min-height: 200px; }
+        .CodeMirror pre { padding-left: 7px; line-height: 1.25; }
+        
+        .placeholder { background: yellow }
+       
+    </style>
+{{end}}
+
+
+</head>
+<body>
+{{=content}}
+
+{{=codes}}
+
+{{=menu}}
+
+</body>

@@ -1,18 +1,38 @@
 # -*- coding: utf-8 -*-
 
-from plugin_introspect import show_menu_and_code, menu
+from plugin_introspect import show_menu_and_code, menu, tutor
 
 
 def index( ): 
     return menu()
-    
-@show_menu_and_code
+
+@tutor 
+def task_test_1():
+    return DIV( 
+                SPAN( "labas " , _style="color:blue"),   ###PLACEHOLDER: --> SPAN( "labas " , _style=""),
+                B("Pasauli"), 
+                SPAN("!", _style="color:red")   ###PLACEHOLDER: --> SPAN("!")
+              )
+              
+@tutor 
+def task_test_2_multiline():
+    return DIV( 
+###GROUP_LINES
+                SPAN( "labas " , _style="color:blue"),   ###PLACEHOLDER: --> SPAN( "labas " , _style=""),
+                B("Pasauli"), ###                "Pasauli",
+###GROUP_LINES_END
+                SPAN("!", _style="color:red")   
+            
+              )
+
+                  
+@tutor
 def CAT_():
     return CAT( "labas ", B("pasauli")  ) # CAT - nuo žodžio "ConCATenate" - tiesiog sujungia elementus 
 
 @show_menu_and_code
 def P_BR():
-    return P( "labas ", BR(), B("pasauli")  ) # CAT - nuo žodžio "ConCATenate" - tiesiog sujungia elementus 
+    return P( "labas ", BR(), B("pasauli")  ) 
        
 @show_menu_and_code
 def DIV_SPAN():

@@ -1,1 +1,4 @@
 *.pyc
+errors/**
+.idea/**
+sessions/**

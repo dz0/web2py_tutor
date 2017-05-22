@@ -1,0 +1,68 @@
+{{#extend 'layout.html'}}
+
+
+
+{{block code}}
+
+    {{if isinstance( code, str ):
+        codes = [ code ]
+      else:
+        codes = code
+      pass
+    }}
+
+{{  is_placeholder=[]
+    
+    for nr, code in enumerate(codes):
+        if code.lower().startswith('###placeholder\n\n'):
+            is_placeholder.append( 'true' )
+            codes[nr] = code[len('###placeholder\n\n'):]
+              
+        else:
+            is_placeholder.append( 'false' )
+        pass
+    pass
+}}          
+
+    <script>
+            window.onload = function () {
+
+            {{  for nr, code in enumerate(codes):}}
+                    cm = CodeMirror.fromTextArea(document.getElementById('code_{{=nr}}'), {
+                        mode: "python",
+                        theme: "default"
+                        ,height: "dynamic"
+                        // ,viewportMargin: Infinity  // https://codemirror.net/demo/resize.html
+                        //, lineNumbers: true
+                        , readOnly: !{{= is_placeholder[nr] }} 
+                    });
+                    cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*18+20 }};
+                    cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*18+20 }};
+                    if ({{=is_placeholder[nr]}} ) cm.getScrollerElement().style.background = "yellow";  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
+                    cm.refresh();
+                      
+            {{  pass }}
+            
+        };
+    </script>
+    
+    <form action="{{=URL('tutor', 'evaluate')}}" method="POST">
+    {{  placeholder_nr = 0     }}
+    {{  for nr, code in enumerate(codes):}}
+       {{ extra = {}; 
+          if is_placeholder[nr]=="true":
+              #extra['_name']="placeholder_%s"%placeholder_nr  
+              extra['_name']="placeholder"
+
+              placeholder_nr += 1
+          pass
+       }}
+       {{ =TEXTAREA( code, _rows=code.count('\n'), _cols=50, _id="code_%s"%nr, **extra)  }}  
+    {{  pass }}
+
+    {{=INPUT(_type="hidden", _name="task_key", _value=task_key)}}
+    {{=INPUT(_type="submit")}}
+     </form>  
+
+{{end}}
+
