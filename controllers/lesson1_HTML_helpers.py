@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from plugin_introspect import show_menu_and_code, menu, tutor
+from plugin_introspect import tutor, menu
 
 
 def index( ): 
@@ -30,40 +30,40 @@ def task_test_2_multiline():
 def CAT_():
     return CAT( "labas ", B("pasauli")  ) # CAT - nuo žodžio "ConCATenate" - tiesiog sujungia elementus 
 
-@show_menu_and_code
+@tutor
 def P_BR():
     return P( "labas ", BR(), B("pasauli")  ) 
        
-@show_menu_and_code
+@tutor
 def DIV_SPAN():
     return DIV( 
                 SPAN("labas", _style="color:blue"),  # kai daugiau info, sveika ją išvardinti per eilutes
                 B("pasauli") 
             )
 
-@show_menu_and_code 
+@tutor 
 def task1():
     return DIV( SPAN( "labas " , _style="color:blue"), 
                 B("Pasauli"), 
                 SPAN("!", _style="color:red") 
               )
 
-@show_menu_and_code
+@tutor
 def SPAN_with_nested():
     return SPAN( CAT( EM("labas"), " pasauli"), _style="color:blue")
 
-@show_menu_and_code
+@tutor
 def task2():
     return DIV( 
                 SPAN( CAT("labas ", B("Pasauli")) , _style="color:blue"), 
                 SPAN("!", _style="color:red") 
            )
 
-@show_menu_and_code
+@tutor
 def UL_():
     return UL( "labas", "rytas", IMG(_height="20", _src="https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg") )
 
-@show_menu_and_code
+@tutor
 def UL_task3():
     return UL( 
         "labas", 
@@ -71,25 +71,25 @@ def UL_task3():
         SPAN("pasauli", IMG(_height="20", _src="https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg")) 
      )
 
-@show_menu_and_code
+@tutor
 def UL_arg_list():
     daug = ['viens', 'du', 'trys']
     return UL(  daug  )
 
 
             
-@show_menu_and_code 
+@tutor 
 def BEAUTIFY_dict():
     zodynas = {'viens':1, 'du':2, 'trys':3 }
     return BEAUTIFY( zodynas )  # žodynui  paryškina raktines reikšmes
 
-@show_menu_and_code 
+@tutor 
 def BEAUTIFY_dict_task():
     zodynas = {'lt':"viens", 'en':"one", 'it':"uno" }
     return BEAUTIFY( zodynas )  
 
 
-@show_menu_and_code 
+@tutor 
 def BEAUTIFY_dict_nested():
     zodynas = { 
                 'LT': {'viens':1, 'du':2 }, 
@@ -98,14 +98,14 @@ def BEAUTIFY_dict_nested():
     return BEAUTIFY( zodynas )  # sąrašo elementus į atskiras eilutes
 
             
-@show_menu_and_code 
+@tutor 
 def BEAUTIFY_mixed():
     zodynas = {'viens':1, 'du':2, 'trys': [3, 6, 9]}
     return BEAUTIFY( zodynas )  # sąrašo elementus į atskiras eilutes
 
 
 
-@show_menu_and_code
+@tutor
 def TABLE_():
     daug = ['viens', 'du', 'trys']
     return CAT(
@@ -116,7 +116,7 @@ def TABLE_():
             )
 
 
-@show_menu_and_code
+@tutor
 def TABLE_matrix():
     maisto_islaidos = [ # matrica
                         ['pusryčiai', 'pietūs', 'vakarienė'],
@@ -135,7 +135,7 @@ def TABLE_matrix():
             )
 
 
-@show_menu_and_code
+@tutor
 def TABLE_matrix_task():
     maisto_islaidos = [ # matrica
                         ['pusryčiai', 'pietūs', 'vakarienė'],

@@ -54,29 +54,7 @@ def menu( ):
 def is_task(fname):
     return '_task' in fname    or    fname.startswith('task')
 
-def show_code( f ):
-    def result():
-        return CAT( 
-                    f(),
-                    BR(),  
-                    # SEMIHIDDEN_CONTENT("[ Kodas ]", get_active_code(f) ) if not is_task(f.__name__) else   "Užduotis: sugalvok kodą šiam pavyzdžiui"
-                    SEMIHIDDEN_CONTENT("[ Kodas ]", get_task_code(f) if is_task(f.__name__) else get_active_code(f) )                )
-        
-    return result
 
-def show_menu( f ):
-    def result():
-        return CAT(  
-                    f(), 
-                    BR(),  
-                    SEMIHIDDEN_CONTENT("[ Meniu ]", menu() ), 
-               )
-    return result
-
-def show_code_and_menu( f ):
-    return show_menu(   show_code(  f  )  )
-    
-def show_menu_and_code( f ): return show_code_and_menu( f ) # alias
 
 def SEMIHIDDEN_CONTENT(name, content):
     js_toggle = ''
@@ -98,7 +76,6 @@ def CODEMIRROR(code, language="python", task_key=None):
         task_key = req.controller + "/" + req.function
     return XML(current.response.render('codemirror.html', dict(code=code, language=language, task_key=task_key)))
     
-
 
 
 def tutor(f):
