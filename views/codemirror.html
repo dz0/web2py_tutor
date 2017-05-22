@@ -25,8 +25,13 @@
 }}          
 
     <script>
+            var placeholders = {};
+            
+            
+            
             window.onload = function () {
-
+                placeholders['{{=task_key}}'] = [];
+                
             {{  for nr, code in enumerate(codes):}}
                     cm = CodeMirror.fromTextArea(document.getElementById('code_{{=nr}}'), {
                         mode: "python",
@@ -36,14 +41,26 @@
                         //, lineNumbers: true
                         , readOnly: !{{= is_placeholder[nr] }} 
                     });
-                    cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*18+20 }};
-                    cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*18+20 }};
-                    if ({{=is_placeholder[nr]}} ) cm.getScrollerElement().style.background = "yellow";  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
+                    cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*16+25 }};
+                    cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*16+25 }};
+                    if ({{=is_placeholder[nr]}} ) {
+                        cm.getScrollerElement().style.background = "#FFFFA9";  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
+                        placeholders['{{=task_key}}'].push( cm );
+                    }
                     cm.refresh();
-                      
+                    
             {{  pass }}
             
         };
+    
+    
+
+    function placeholders_on_submit(task_key){
+        placeholders[task_key].forEach( function ( cm ) {
+            cm.save()
+            cm.getScrollerElement().style.background = "#FFFFA9"; 
+        }); 
+    }
     </script>
     
     <form action="{{=URL('tutor', 'evaluate')}}" method="POST">
@@ -61,8 +78,17 @@
     {{  pass }}
 
     {{=INPUT(_type="hidden", _name="task_key", _value=task_key)}}
-    {{=INPUT(_type="submit")}}
+    {{=INPUT(_type="submit" )}}
+    {{ 
+        # save state to textarea
+        js_save = "placeholders_on_submit('%s'); "%task_key
+        # call stuff
+        js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')
+        js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'highlight_wrong':1} )
+    }}
+    {{=INPUT(_type="submit", _value="ajax", _onclick= js_save+js_get_hints + js_highligth +" return false;" )}}
      </form>  
 
+<div id="results"> </div>
 {{end}}
 

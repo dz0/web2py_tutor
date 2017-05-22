@@ -12,13 +12,25 @@ def evaluate():
             
     if task_key and answers and answers.get(task_key):
         # #take placeholders and answers for current task
-        
+        result = ""
+        wrong_ph_nrs = []
         for nr, ph, answer in zip( range(len(placeholders)), placeholders, answers[task_key] ):
             # return BEAUTIFY( [ph, answer] )
             problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 )
             if problems:
-                return problems
-        return "OK"
+                result += "<li>%s </li><br />"%problems
+                wrong_ph_nrs.append( nr )
+                # return problems
+            
+                
+        if result:
+            if request.vars.highlight_wrong:
+                js_tpl = "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';"
+                return ';\n'.join( [js_tpl % locals() for nr in wrong_ph_nrs ] )
+                # nr = wrong_ph_nrs[0]
+                # return "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';" % locals()
+            return result
+        return "<b>OK :)</b>"
         
           
         

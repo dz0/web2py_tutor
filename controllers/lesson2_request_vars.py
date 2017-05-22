@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from plugin_introspect import show_menu_and_code, menu
+from plugin_introspect import tutor, menu
 
 def index(): return menu()
 
-@show_menu_and_code
+@tutor
 def GET_vars():
     
     duomenys = request.vars  # request reiškia kreipimąsi į serverį. O "vars" -- atseit "variables" (pažodžiui būtų "kintamieji", bet realiai -- tiesiog duomenys su vardais) .
@@ -23,7 +23,7 @@ def GET_vars():
         )
 
 
-@show_menu_and_code
+@tutor
 def FORM_POST_vars():
     
     duomenys = request.vars  
@@ -41,17 +41,17 @@ def FORM_POST_vars():
         )
 
 
-@show_menu_and_code
+@tutor
 def FORM_POST_vars_task():
     
     duomenys = request.vars  
     
-    form = FORM( 
+    form = FORM(     
                 "Kas:", INPUT(_name="kas"),    
                 BR(),
-                "Kiek:",  INPUT(_name="kiek", _type="number"),    
+                "Kiek:",  INPUT(_name="kiek", _type="number"),    ###PLACEHOLDER --> "Kiek:",  INPUT( ), 
                 BR(),
-                INPUT(_type="submit", _value="OK")   # siuntio mygtukas
+                INPUT(_type="submit", _value="OK")  # siuntio mygtukas ###PLACEHOLDER -->  INPUT( )   # siuntimo mygtukas
            )
     
     return CAT( 
