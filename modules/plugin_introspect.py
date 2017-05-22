@@ -55,18 +55,18 @@ def is_task(fname):
     return '_task' in fname    or    fname.startswith('task')
 
 
-
 def SEMIHIDDEN_CONTENT(name, content):
     js_toggle = ''
     """
-    d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = d=='block'? 'none': 'block';
+    d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = (d=='block'||d=='') ? 'none': 'block';
     """
     
     return CAT( 
         BR(),
-        SPAN( name, _onclick=js_toggle, _style="cursor:hand"),
-        SPAN( content )
-        # SPAN( content, _style="display:none" )
+        SPAN( name, _class="button", _onclick=js_toggle, _style="cursor:hand"),
+        SPAN( content , _class="togglable")
+        # SPAN( content, _class="togglable", _style="display:none" )
+        , BR(), SPAN("", _class="after_togglable")
     )
 
 def CODEMIRROR(code, language="python", task_key=None):
@@ -82,7 +82,7 @@ def tutor(f):
     """smart decorator"""
     def result():
         content = f()
-        codes = SEMIHIDDEN_CONTENT("[ Kodas ]", get_task_code(f) if is_task(f.__name__) else get_active_code(f) )  
+        codes = SEMIHIDDEN_CONTENT("[ Kodas ]"  if not is_task(f.__name__) else "[ Užduoties kodas ]", get_task_code(f) )  
         menu_ = SEMIHIDDEN_CONTENT("[ Meniu ]", menu() )
         return XML(current.response.render('tutor.html', dict( content=content, codes=codes, menu=menu_) ) )
         # return  gluon.template.render(content='...', context=<vars>)

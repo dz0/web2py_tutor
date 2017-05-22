@@ -78,15 +78,21 @@
     {{  pass }}
 
     {{=INPUT(_type="hidden", _name="task_key", _value=task_key)}}
+<!--
     {{=INPUT(_type="submit" )}}
-    {{ 
-        # save state to textarea
-        js_save = "placeholders_on_submit('%s'); "%task_key
-        # call stuff
-        js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')
-        js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'highlight_wrong':1} )
-    }}
-    {{=INPUT(_type="submit", _value="ajax", _onclick= js_save+js_get_hints + js_highligth +" return false;" )}}
+-->
+
+    {{ # if we have placeholders to enter, add "Submit" button }}
+    {{  if [1 for  x  in  is_placeholder if x == 'true']: }}
+        {{  
+            # save state to textarea
+            js_save = "placeholders_on_submit('%s'); "%task_key
+            # call stuff
+            js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')
+            js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'highlight_wrong':1} )
+        }}
+        {{=INPUT(_type="submit", _onclick= js_save+js_get_hints + js_highligth +" return false;" )}}
+    {{ pass }}
      </form>  
 
 <div id="results"> </div>
