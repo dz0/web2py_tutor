@@ -37,6 +37,7 @@ def CAT_():
 
 @tutor
 def task0():
+    """Pakeiskite/papildykite kodą, kad gautųsi rodomas rezultatas"""
     return CAT( "labas ", B("pasauli") , "!" )   ###PLACEHOLDER: --> return CAT( "labas ", B("pasauli")  )
 
     
