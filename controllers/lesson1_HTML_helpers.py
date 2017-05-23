@@ -36,8 +36,14 @@ def CAT_():
     return CAT( "labas ", B("pasauli")  ) # CAT - nuo žodžio "ConCATenate" - tiesiog sujungia elementus 
 
 @tutor
+def task0():
+    return CAT( "labas ", B("pasauli") , "!" )   ###PLACEHOLDER: --> return CAT( "labas ", B("pasauli")  )
+
+    
+@tutor
 def P_BR():
     return P( "labas ", BR(), B("pasauli")  ) 
+       
        
 @tutor
 def DIV_SPAN():

@@ -78,6 +78,10 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
 
     unnecessary= a - b
     missing  = b - a
+    # print "dbg input", input
+    # print "dbg expected", expected
+    # print "dbg unnecessary", unnecessary
+    # print "dbg missing", missing
 
     if limit_hints:
         missing = list( missing.keys() )
@@ -146,6 +150,8 @@ def placeholder_smart_compare(placeholder, expected, human_nr=None, **hints_kwar
 
 if __name__ == '__main__':
     # SOME TESTS
+    print( get_tokens('return CAT( "labas ", B("pasauli"), "!"  )' ))
+    print( placeholder_smart_compare('return CAT( "labas ", "pasauli" )', 'return CAT( "labas ", B("pasauli"), "!"  )') )
     print( placeholder_smart_compare(u'SPAN( "ąžlabas " , _style=""),', 'SPAN( "labas " , _style="color:blue"),') )
     print("\n"*10)
     
