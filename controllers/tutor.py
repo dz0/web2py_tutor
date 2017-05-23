@@ -29,7 +29,7 @@ def evaluate():
                 return ';\n'.join( [js_tpl % locals() for nr in wrong_ph_nrs ] )
                 # nr = wrong_ph_nrs[0]
                 # return "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';" % locals()
-            return result
+            return CAT( P(B("Užuominos:")), XML(result) )
         return "<b>OK :)</b>"
         
           
