@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 from test_helper import failed, passed
 
@@ -12,6 +14,7 @@ def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
         # g = tokenize(BytesIO(code.encode('utf-8')).readline)  # tokenize the string
         # according to https://stackoverflow.com/a/4952291
         g = generate_tokens(StringIO(unicode( code ) ).readline)  # tokenize the string
+        # g = generate_tokens(StringIO( code.decode('utf-8') ).readline)  # tokenize the string
         tokens = [tokval for toknum, tokval, _, _, _ in g][1:]
         # failed( tokens)
     except TokenError as e:
@@ -143,7 +146,7 @@ def placeholder_smart_compare(placeholder, expected, human_nr=None, **hints_kwar
 
 if __name__ == '__main__':
     # SOME TESTS
-    print( placeholder_smart_compare('SPAN( "labas " , _style=""),', 'SPAN( "labas " , _style="color:blue"),') )
+    print( placeholder_smart_compare(u'SPAN( "ąžlabas " , _style=""),', 'SPAN( "labas " , _style="color:blue"),') )
     print("\n"*10)
     
     # placeholder_smart_compare(placeholder='has_money == True', expected='has_money', unnecessary=['=='], required='has_money')

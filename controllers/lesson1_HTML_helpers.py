@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import sys  
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 from plugin_introspect import tutor, menu
 
@@ -6,6 +10,7 @@ from plugin_introspect import tutor, menu
 def index( ): 
     return menu()
 
+"""
 @tutor 
 def task_test_1():
     return DIV( 
@@ -24,7 +29,7 @@ def task_test_2_multiline():
                 SPAN("!", _style="color:red")   
             
               )
-
+"""
                   
 @tutor
 def CAT_():
@@ -43,10 +48,13 @@ def DIV_SPAN():
 
 @tutor 
 def task1():
-    return DIV( SPAN( "labas " , _style="color:blue"), 
+    """Pakeiskite/papildykite kodą, kad gautųsi rodomas rezultatas"""
+    return DIV( 
+                SPAN( "labas " , _style="color:blue"),   ###PLACEHOLDER: --> SPAN( "labas " , _style=""),
                 B("Pasauli"), 
-                SPAN("!", _style="color:red") 
+                SPAN("!", _style="color:red")   ###PLACEHOLDER: --> SPAN("!")
               )
+              
 
 @tutor
 def SPAN_with_nested():
@@ -55,8 +63,8 @@ def SPAN_with_nested():
 @tutor
 def task2():
     return DIV( 
-                SPAN( CAT("labas ", B("Pasauli")) , _style="color:blue"), 
-                SPAN("!", _style="color:red") 
+                SPAN( CAT("labas ", B("Pasauli")) , _style="color:blue"),  ###PLACEHOLDER: --> SPAN( ?? , _style="color:blue"),  # hint: zr ankstesni pvz.
+                SPAN("!", _style="color:red")  ###PLACEHOLDER: --> SPAN("!", _style="color:red") 
            )
 
 @tutor
