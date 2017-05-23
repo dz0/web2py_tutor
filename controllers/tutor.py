@@ -25,16 +25,23 @@ def evaluate():
                 # return problems
             
                 
-        if result:
-            if request.vars.highlight_wrong:
-                js_tpl = "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';"
+        if request.vars.highlight_wrong:
+            js_tpl = "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '%(color)s';"
+            if result: 
+                color = "#FFC0CB"
                 return ';\n'.join( [js_tpl % locals() for nr in wrong_ph_nrs ] )
                 # nr = wrong_ph_nrs[0]
                 # return "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';" % locals()
+            else:
+                color = "#BBF8BB"
+                return ';\n'.join( [js_tpl % locals() for nr in range(len(placeholders)) ] )
+                
+        if result:
             # return CAT( BEAUTIFY([request.vars, session.answers] ),  P(B("Užuominos:")), XML(result) )
             # return CAT( BEAUTIFY([request.vars] ),  P(B("Užuominos:")), XML(result) )
             return CAT( P(B("Užuominos:")), XML(result) )
-        return "<b>OK :)</b>"
+        else:
+            return "<b>OK :)</b>"
         
           
         
