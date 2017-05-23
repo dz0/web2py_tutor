@@ -29,7 +29,7 @@
             $('#menu .button').mouseover( function(){ $("#menu .togglable").show() });
 
             // let codemirror load first
-            setTimeout( function(){ $('#codes .togglable').hide(); }, 100); // css('display', 'none');
+            // setTimeout( function(){ $('#codes .togglable').hide(); }, 100); // css('display', 'none');
             
             $('#menu .button').click( function(){ $("#menu .togglable").toggle() });
             $('#codes .button').click( function(){ $("#codes .togglable").toggle() });
@@ -46,6 +46,7 @@
 
 <br />
 {{=DIV( codes, _id="codes" )}}
+
 
 {{=DIV( menu, _id="menu" )}}
 

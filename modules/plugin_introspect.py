@@ -13,7 +13,7 @@ import inspect
 import re
 import os
 
-def lessons_menu():
+def lessons_menu(return_plain=False):
     
     request = current.request
     
@@ -26,9 +26,12 @@ def lessons_menu():
     
     menu = [  A(  c[len("lesson"):].title(),     _href=URL(c, 'index') )     for c in controllers ]
     
-    return UL(menu)
+    if return_plain:
+        return controllers
+    else:
+        return UL(menu)
         
-def exposed_functions( bla=None ):
+def exposed_functions( ):
     
     request = current.request
     
@@ -84,7 +87,24 @@ def tutor(f):
     def result():
         content = f()
         codes = SEMIHIDDEN_CONTENT("[ Kodas ]"  if not is_task(f.__name__) else "[ Užduoties kodas ]", get_task_code(f) )  
+        
+        # menu
+         
         menu_ = SEMIHIDDEN_CONTENT("[ Meniu ]", menu() )
+        
+        # next menu
+        items = exposed_functions( )
+        req = current.request
+        nr = items.index( req.function )
+        next = items[nr+1] if nr < len(items)-1  else None
+        prev = items[nr-1] if nr > 0  else None
+        
+        a_next = A("[ Pirmyn ]", _href=URL(next))   if  next!=None  else ""
+        a_prev = A("[ Atgal ]", _href=URL(prev))   if  prev!=None  else ""
+        menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
+            
+        
+        
         return XML(current.response.render('tutor.html', dict( content=content, codes=codes, menu=menu_) ) )
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
