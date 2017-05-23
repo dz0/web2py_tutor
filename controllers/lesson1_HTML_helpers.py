@@ -49,7 +49,7 @@ def DIV_SPAN():
 @tutor 
 def task1():
     """Pakeiskite/papildykite kodą, kad gautųsi rodomas rezultatas"""
-    return DIV( 
+    return DIV( ###PLACEHOLDER: --> DIV
                 SPAN( "labas " , _style="color:blue"),   ###PLACEHOLDER: --> SPAN( "labas " , _style=""),
                 B("Pasauli"), 
                 SPAN("!", _style="color:red")   ###PLACEHOLDER: --> SPAN("!")
@@ -64,19 +64,21 @@ def SPAN_with_nested():
 def task2():
     return DIV( 
                 SPAN( CAT("labas ", B("Pasauli")) , _style="color:blue"),  ###PLACEHOLDER: --> SPAN( ?? , _style="color:blue"),  # hint: zr ankstesni pvz.
-                SPAN("!", _style="color:red")  ###PLACEHOLDER: --> SPAN("!", _style="color:red") 
+                SPAN("!", _style="color:red")  
            )
 
 @tutor
 def UL_():
-    return UL( "labas", "rytas", IMG(_height="20", _src="https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg") )
+    url = "https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg"
+    return UL( "labas", "rytas", IMG(_height="20", _src=url ) )
 
 @tutor
 def UL_task3():
+    url = "https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg"
     return UL( 
         "labas", 
-        B("rytas"), 
-        SPAN("pasauli", IMG(_height="20", _src="https://upload.wikimedia.org/wikipedia/en/8/80/Wikipedia-logo-v2.svg")) 
+        B("rytas"),  ###PLACEHOLDER: --> "rytas"
+        SPAN("pasauli", IMG(_height="20", _src=url))    ###PLACEHOLDER: --> "pasauli", IMG(_height="20")
      )
 
 @tutor
@@ -93,8 +95,8 @@ def BEAUTIFY_dict():
 
 @tutor 
 def BEAUTIFY_dict_task():
-    zodynas = {'lt':"viens", 'en':"one", 'it':"uno" }
-    return BEAUTIFY( zodynas )  
+    zodynas = {'lt':"viens", 'en':"one", 'it':"uno" } ###PLACEHOLDER: --> zodynas = {'lt':"viens"}
+    return BEAUTIFY( zodynas )  ###PLACEHOLDER: --> zodynas
 
 
 @tutor 
@@ -145,18 +147,19 @@ def TABLE_matrix():
 
 @tutor
 def TABLE_matrix_task():
-    maisto_islaidos = [ # matrica
-                        ['pusryčiai', 'pietūs', 'vakarienė'],
+    # matrica
+    maisto_islaidos = [  ###PLACEHOLDER --> maisto_islaidos =
+                        ['pusryčiai', 'pietūs', 'vakarienė'], ###PLACEHOLDER --> [ ]
                         [0,  5, 3], 
                         [9,  0, 6]  
                       ]
             
     return CAT(
-            H1("Maisto išlaidos"),
+            H1("Maisto išlaidos"),  ###PLACEHOLDER --> "Maisto išlaidos"
             TABLE( maisto_islaidos  ), 
             STYLE( """
                   table {border-collapse:collapse;} 
-                  table td { border:1px solid silver }""" )  # bendrai stilių geriau aprašyt kokiam CSS faile
+                  table td { border:1px solid silver }""" )  
             )
 
 
