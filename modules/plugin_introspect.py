@@ -22,6 +22,7 @@ def lessons_menu():
     dirpath = apath('%s/controllers' % app, r=request)    
     
     controllers  = [ c[:-len('.py')]   for c in os.listdir( dirpath )      if c.startswith('lesson') and c.endswith('.py')]
+    controllers.sort()
     
     menu = [  A(  c[len("lesson"):].title(),     _href=URL(c, 'index') )     for c in controllers ]
     
