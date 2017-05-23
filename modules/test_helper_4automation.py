@@ -19,7 +19,7 @@ def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
         # failed( tokens)
     except TokenError as e:
         failed("ERR %r <br>  in get_tokens(%r, ...)" %(e, code))
-   
+        raise TokenError( "ERR %r <br>  in get_tokens(%r, ...)" %(e, code) )
     
     
     if group_by_parentheses_one_level:

@@ -49,7 +49,7 @@ def DIV_SPAN():
 @tutor 
 def task1():
     """Pakeiskite/papildykite kodą, kad gautųsi rodomas rezultatas"""
-    return DIV( ###PLACEHOLDER: --> DIV
+    return DIV( 
                 SPAN( "labas " , _style="color:blue"),   ###PLACEHOLDER: --> SPAN( "labas " , _style=""),
                 B("Pasauli"), 
                 SPAN("!", _style="color:red")   ###PLACEHOLDER: --> SPAN("!")

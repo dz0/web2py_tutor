@@ -103,8 +103,6 @@ def tutor(f):
         a_prev = A("[ Atgal ]", _href=URL(prev))   if  prev!=None  else ""
         menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
             
-        
-        
         return XML(current.response.render('tutor.html', dict( content=content, codes=codes, menu=menu_) ) )
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
