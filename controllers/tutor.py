@@ -11,36 +11,56 @@ def evaluate():
         placeholders = [ placeholders ]  
     
     answers= session.answers
-            
+    initial_codes= session.initial_codes
+
     if task_key and answers and answers.get(task_key):
         # #take placeholders and answers for current task
-        result = ""
-        wrong_ph_nrs = []
-        for nr, ph, answer in zip( range(len(placeholders)), placeholders, answers[task_key] ):
+        hints_result =  "" # hint's result
+
+        js_tpl_highlight = "    highlight_placeholder( placeholders['%(task_key)s'][%(nr)s],   '%(state)s' );\n"
+        js_tpl_hints = "    show_hint( placeholders['%(task_key)s'][%(nr)s],   \"%(hints)s\" );\n"
+        js_highlight_result = []
+        js_hints_result = []
+
+        evaluations = []
+
+        for nr, ph, answer, initial_code in zip( range(len(placeholders)), placeholders, answers[task_key], initial_codes[task_key] ):
             # return BEAUTIFY( [ph, answer] )
-            problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 )
-            if problems:
-                result += "<li>%s </li><br />"%problems
-                wrong_ph_nrs.append( nr )
-                # return problems
-            
-                
-        if request.vars.highlight_wrong:
-            js_tpl = "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '%(color)s';"
-            if result: 
-                color = "#FFC0CB"
-                return ';\n'.join( [js_tpl % locals() for nr in wrong_ph_nrs ] )
-                # nr = wrong_ph_nrs[0]
-                # return "placeholders['%(task_key)s'][%(nr)s].getScrollerElement().style.background = '#FFC0CB';" % locals()
+
+            if ph == initial_code:
+                state = 'initial'
+                hints = u"kažką reik pakeist.."
+
             else:
-                color = "#BBF8BB"
-                return ';\n'.join( [js_tpl % locals() for nr in range(len(placeholders)) ] )
-                
-        if result:
-            # return CAT( BEAUTIFY([request.vars, session.answers] ),  P(B("Užuominos:")), XML(result) )
-            # return CAT( BEAUTIFY([request.vars] ),  P(B("Užuominos:")), XML(result) )
-            return CAT( P(B("Užuominos:")), XML(result) )
-        else:
+                problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 )
+
+                if problems:
+                    state = 'wrong'
+                    hints = u"Laukelis nr. %s: <li>%s </li><br />" % (nr+1, problems)
+                    hints_result += hints
+
+
+                else: #  ph == answer   might be picky about spacing...
+                    state = 'ok'
+                    hints = "ok"
+
+            evaluations.append(state)
+            js_highlight_result.append( js_tpl_highlight % locals() )
+            js_hints_result.append(js_tpl_hints % locals())
+
+        if request.vars.change_placeholders: # ajax
+            return ''.join( js_highlight_result +["\n"]+ js_hints_result )
+
+        return ""
+
+        # deprecated -- for debug purposes..
+        if 'wrong' in evaluations:
+            return CAT( P(B("Užuominos:")), XML(hints_result) )
+
+        if 'initial' in evaluations:
+            return "kažką reikia pakeisti (geltonam fone)..."
+
+        if not ( 'wrong' in evaluations and 'initial' in evaluations ) :
             return "<b>OK :)</b>"
         
           

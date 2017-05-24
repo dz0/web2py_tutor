@@ -1,12 +1,13 @@
 <head>
-{{include 'web2py_ajax.html'}} 
 
 {{block head}}
 {{
     CMROOT="/admin/static/codemirror"
     # CMROOT="http://codemirror.net"
-    
+    response.files.append(URL('static','js/jquery.balloon.js'))
 }}
+{{include 'web2py_ajax.html'}}
+
   <link rel="stylesheet" href="{{=CMROOT}}/lib/codemirror.css">
     <script src="{{=CMROOT}}/lib/codemirror.js"></script>
     <script src="{{=CMROOT}}/addon/edit/matchbrackets.js"></script>

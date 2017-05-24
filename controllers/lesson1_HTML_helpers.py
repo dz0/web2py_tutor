@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys  
+# import sys  
 
-reload(sys)  
-sys.setdefaultencoding('utf8')
+# reload(sys)  
+# sys.setdefaultencoding('utf8')
 
 from plugin_introspect import tutor, menu
 

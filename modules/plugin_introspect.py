@@ -5,6 +5,10 @@ from gluon import current
 from gluon.html import * # URL, UL, A, B, CAT, PRE, CODE, BR, SPAN
 from gluon.admin import apath
 from gluon.compileapp import find_exposed_functions
+from gluon.myregex import regex_expose  # TODO: get the most recent function code manually parsing controller
+
+from task_parser import task
+
 # except ImportError as e:
     # print( e )
 
@@ -59,7 +63,7 @@ def is_task(fname):
     return '_task' in fname    or    fname.startswith('task')
 
 
-def SEMIHIDDEN_CONTENT(name, content):
+def TOGGLABLE_CONTENT(name, content):
     js_toggle = ''
     """
     d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = (d=='block'||d=='') ? 'none': 'block';
@@ -86,11 +90,11 @@ def tutor(f):
     """smart decorator"""
     def result():
         content = f()
-        codes = SEMIHIDDEN_CONTENT("[ Kodas ]"  if not is_task(f.__name__) else "[ Užduoties kodas ]", get_task_code(f) )  
+        codes = TOGGLABLE_CONTENT("[ Kodas ]"  if not is_task(f.__name__) else "[ Užduoties kodas ]", get_task_code(f))
         
         # menu
          
-        menu_ = SEMIHIDDEN_CONTENT("[ Meniu ]", menu() )
+        menu_ = TOGGLABLE_CONTENT("[ Meniu ]", menu())
         
         # next menu
         items = exposed_functions( )
@@ -108,8 +112,7 @@ def tutor(f):
     return result 
     
 def get_task_code(f, decorate=True):
-    from task_parser import task
-    
+
     code = get_active_code( f, decorate=False) # inspect.getsource( f ) 
     
     t = task(  code )
@@ -124,10 +127,15 @@ def get_task_code(f, decorate=True):
     # save answers in session
     req = current.request
     session = current.session
-    session.setdefault( 'answers', {} )
+
     task_key = req.controller +'/'+ req.function
+
+    session.setdefault( 'answers', {} )
     session.answers[ task_key ]  = [p['expected'] for p in t['placeholders'] ]
-    
+
+    session.setdefault( 'initial_codes', {} )
+    session.initial_codes[ task_key ]  = [p['given'] for p in t['placeholders'] ]
+
     for nr, line in  enumerate( t['student_lines'] ):
         if nr in placeholder_line_nrs:
             if current_chunk: # flush current nonplaceholder chunk
@@ -171,6 +179,10 @@ def get_active_code(f=None, decorate=True):
     code = re.sub(r",\s*?index\(\s*?\)", "", code) 
     code = re.sub(r"^@show_.+?$", "", code, flags=re.MULTILINE) 
     code = re.sub(r"^@tutor.*?$", "", code, flags=re.MULTILINE) 
+    # remove/hide lines by directive "###HIDE"
+    code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE) 
+    
+     
     # code = re.sub(r"@show_menu", "", code) 
     # code = re.sub(r"@show_code", "", code) 
     

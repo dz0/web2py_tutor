@@ -28,7 +28,22 @@
             var placeholders = {};
             
             
-            
+            function highlight_placeholder( cm, state ){
+                // highlights background by  correctness state
+                colors = {
+                    'initial': '#FFFFA9',
+                    'wrong': '#FFC0CB',
+                    'ok': '#BBF8BB'
+                    };
+                cm.getScrollerElement().style.background = colors[ state ]  ;  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
+            }
+
+            function show_hint( cm, hints ){
+                cm.getScrollerElement().title = hints;  // if hints is ""  should do some trick to prevent balloon with previous contents
+                //$(".CodeMirror-scroll").balloon();  //needs balloon activation once
+
+            }
+
             window.onload = function () {
                 placeholders['{{=task_key}}'] = [];
                 
@@ -44,21 +59,24 @@
                     cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*16+25 }};
                     cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*16+25 }};
                     if ({{=is_placeholder[nr]}} ) {
-                        cm.getScrollerElement().style.background = "#FFFFA9";  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
+                        highlight_placeholder(cm, "initial");
                         placeholders['{{=task_key}}'].push( cm );
                     }
                     cm.refresh();
                     
             {{  pass }}
+
+                    $(".CodeMirror-scroll").balloon();  // activate hints via el title
+
             
         };
     
-    
+
 
     function placeholders_on_submit(task_key){
         placeholders[task_key].forEach( function ( cm ) {
             cm.save()
-            cm.getScrollerElement().style.background = "#FFFFA9"; 
+            highlight_placeholder(cm,  "initial")
         }); 
     }
     </script>
@@ -89,8 +107,8 @@
             # save state to textarea
             js_save = "placeholders_on_submit('%s'); "%task_key
             # call stuff
-            js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')
-            js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'highlight_wrong':1} )
+            js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')  # deprecated -- for debug purposes
+            js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'change_placeholders':1} )
         }}
         {{=INPUT(_type="submit", _onclick= js_save+js_get_hints + js_highligth +" return false;" )}}
     {{ pass }}

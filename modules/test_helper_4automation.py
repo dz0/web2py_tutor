@@ -3,6 +3,12 @@
 import sys
 from test_helper import failed, passed
 
+# http://pygments.org/docs/quickstart/#guessing-lexers
+from pygments.lexers import PythonLexer
+lexer = PythonLexer()
+
+
+
 # https://docs.python.org/3/library/tokenize.html
 from tokenize import generate_tokens, tokenize, untokenize, NUMBER, STRING, NAME, OP, TokenError
 from io import BytesIO, StringIO
@@ -18,8 +24,10 @@ def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
         tokens = [tokval for toknum, tokval, _, _, _ in g][1:]
         # failed( tokens)
     except TokenError as e:
-        failed("ERR %r <br>  in get_tokens(%r, ...)" %(e, code))
-        raise TokenError( "ERR %r <br>  in get_tokens(%r, ...)" %(e, code) )
+        # print ("standart tokenizer ERR %r <br>  in get_tokens(%r, ...)" %(e, code))
+        tokens = [tokval for toktype, tokval in  lexer.get_tokens(code)]
+        # failed("ERR %r <br>  in get_tokens(%r, ...)" %(e, code))
+        # raise TokenError( "ERR %r <br>  in get_tokens(%r, ...)" %(e, code) )
     
     
     if group_by_parentheses_one_level:
@@ -104,11 +112,11 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
     msgs = []
 
     if result and  result in placeholder    and  len(placeholder) > len(result):
-        msg = "Too much code in placeholder.."
+        msg = "Per daug teksto.."
         if placeholder.startswith(result):
-            msg += " at the end..."
+            msg += " gale..."
         if placeholder.endswith(result):
-            msg += " at the beginning.."
+            msg += " prieky.."
         msgs.append( msg )
 
     if not isinstance(unnecessary, (list, tuple)):
@@ -118,11 +126,13 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
 
     for item in unnecessary:
         if item in placeholder:
-            msgs .append( "some " +code_highlight(item) + " is not exactly needed" )
+            # msgs .append( "some " +code_highlight(item) + " is not exactly needed" )
+            msgs .append( code_highlight(item) + " kaip ir nereikalingas" )
     msgs.append("")
     for item in required:
         if not item in placeholder:
-            msgs .append(  code_highlight(item) + " is expected "  )
+            # msgs .append(  code_highlight(item) + " is expected "  )
+            msgs .append( "tikimasi " + code_highlight(item)  )
 
     return msgs
 
@@ -141,8 +151,8 @@ def placeholder_smart_compare(placeholder, expected, human_nr=None, **hints_kwar
 
     else:
         msgs = hints_by_token_comparison(placeholder, expected, **hints_kwargs)
-        if human_nr:
-            msgs.insert(0, "Placeholder nr. %s:" %(human_nr))
+        # if human_nr:
+            # msgs.insert(0, "Placeholder nr. %s:" %(human_nr))
         failed( '<br />'.join(msgs) )
         return '<br />'.join(msgs) 
 
