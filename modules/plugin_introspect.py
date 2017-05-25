@@ -126,7 +126,9 @@ def tutor(f):
     """smart decorator"""
     def result():
         content = f()
-        codes = TOGGLABLE_CONTENT("[ Kodas ]"  if not is_task(f.__name__) else "[ Užduoties kodas ]", get_task_code(f))
+        about = get_module_doc( get_controller_code() )
+
+        codes = TOGGLABLE_CONTENT("[ Kodas ]", get_task_code(f))
         
         # menu
          
@@ -142,8 +144,9 @@ def tutor(f):
         a_next = A("[ Pirmyn ]", _href=URL(next))   if  next!=None  else ""
         a_prev = A("[ Atgal ]", _href=URL(prev))   if  prev!=None  else ""
         menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
-            
-        return XML(current.response.render('tutor.html', dict( content=content, codes=codes, menu=menu_) ) )
+
+
+        return XML(current.response.render('tutor.html', dict( about=about, content=content, codes=codes, menu=menu_) ) )
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     
@@ -238,6 +241,12 @@ def get_active_code(f=None, decorate=True):
 
 # def get_file_function_code(controller, function):
     # pass 
+
+import ast
+def get_module_doc(code):
+    module = ast.parse(code)
+    return ast.get_docstring(module)
+
 
 if __name__ == '__main__':
     def ftest():

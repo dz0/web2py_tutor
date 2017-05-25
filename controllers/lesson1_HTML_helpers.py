@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+""" 
+Web2Py [[HTML generavimo http://www.web2py.com/books/default/chapter/29/05/the-views#HTML-helpers]] pagalbinės funkcijos (helpers).
+"""
 # import sys  
 
 # reload(sys)  
@@ -33,7 +36,7 @@ def task_test_2_multiline():
                   
 @tutor
 def CAT_():
-    return CAT( "labas ", B("pasauli")  ) # CAT - nuo žodžio "ConCATenate" - tiesiog sujungia elementus 
+    return CAT( "labas ", B("pasauli")  ) # CAT - nuo žodžio "conCATenate" - reiškia "sujungti" 
 
 @tutor
 def task0():
@@ -46,6 +49,17 @@ def P_BR():
     return P( "labas ", BR(), B("pasauli")  ) 
        
        
+@tutor
+def attributes():
+    # vienu pabraukimu prasidedantys parametrai atitinka HTML elementų atributus
+    return  SPAN("labas", _style="color:blue", _onmouseover="alert('ku ku')" ) 
+       
+@tutor
+def attributes_task():
+    # pabraukti parametrai atitinka HTML elementų atributus
+    return  A("labas", _href="http://web2py.com", _title="labas web2py") ###PLACEHOLDER: --> return  A("labas", ="http://web2py.com", _title="labas web2py") 
+   
+
 @tutor
 def DIV_SPAN():
     return DIV( 

@@ -22,6 +22,8 @@
         .CodeMirror pre { padding-left: 7px; line-height: 1.25; }
         
         .placeholder { background: #FFFFA9 }
+
+        #content { padding: 20px; background: #fafafa; }
        
     </style>
     <script>
@@ -42,8 +44,15 @@
 
 </head>
 <body>
-{{=content}}
-{{#=DIV( content, _id="content" )}}
+Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzdžiai kartu su kodu.
+<br > Taip pat bus užduotys, kuriose reikia pabaigti kodo fragmentus, kad jie atitiktų pateiktą pavyzdį.
+
+{{=MARKMIN( about , BR() ) if globals().get('about') else '' }}
+
+
+{{#=content}}
+[ Pavyzdys ] <br/><br/>
+{{=DIV( content, _id="content" )}}
 
 <br />
 {{=DIV( codes, _id="codes" )}}

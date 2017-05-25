@@ -54,6 +54,12 @@ def evaluate():
             js_highlight_result.append( js_tpl_highlight % locals() )
             js_hints_result.append(js_tpl_hints % locals())
 
+        if evaluations.count('initial') == len(evaluations):
+            js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonuose laukeliuose... ;)")
+
+        if evaluations.count('ok') == len(evaluations):
+            js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti toliau!")
+
         if request.vars.change_placeholders: # ajax
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
