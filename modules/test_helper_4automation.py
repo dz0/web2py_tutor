@@ -136,7 +136,7 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
 
     # if a_tokens == b_tokens:
     if eq_ignoring_pyquotes_type( a_tokens , b_tokens ):
-        msgs = [  "seems OK, maybe spacing is mangled.." ]
+        msgs = [  "seems OK, maybe spacing or quotation is mangled.." ]
 
     else:
         a = Counter( a_tokens )
@@ -144,25 +144,25 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
         if a == b:
             msgs =[ "Ordering is incorrect" ]
 
-    unnecessary= a - b
-    missing  = b - a
-    # print "dbg input", input
-    # print "dbg expected", expected
-    # print "dbg unnecessary", unnecessary
-    # print "dbg missing", missing
+        unnecessary= a - b
+        missing  = b - a
+        # print "dbg input", input
+        # print "dbg expected", expected
+        # print "dbg unnecessary", unnecessary
+        # print "dbg missing", missing
 
-    if limit_hints:
-        missing = list( missing.keys() )
-        unnecessary = list( unnecessary.keys() )
+        if limit_hints:
+            missing = list( missing.keys() )
+            unnecessary = list( unnecessary.keys() )
 
-        random.shuffle( missing )
-        random.shuffle( unnecessary )
+            random.shuffle( missing )
+            random.shuffle( unnecessary )
 
-        missing = missing[:limit_hints]
-        unnecessary = unnecessary[:limit_hints]
+            missing = missing[:limit_hints]
+            unnecessary = unnecessary[:limit_hints]
 
-    msgs_more = messages_by_fragments(input, required=missing, unnecessary=unnecessary )
-    return msgs + msgs_more
+        msgs_more = messages_by_fragments(input, required=missing, unnecessary=unnecessary )
+        return msgs + msgs_more
 
 def code_highlight(txt):
     return "<span style='color:blue; font-family: monospace;'>%s</span>" % txt
