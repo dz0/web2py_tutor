@@ -226,6 +226,7 @@ def get_active_code(f=None, decorate=True):
     code = re.sub(r"^@tutor.*?$", "", code, flags=re.MULTILINE) 
     # remove/hide lines by directive "###HIDE"
     code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE)
+    code = re.sub(r"^(\s*).*?###REPLACE:?\s*?(.*?)$", r"\1\2", code, flags=re.MULTILINE)
 
 
     # code = re.sub(r"@show_menu", "", code) 

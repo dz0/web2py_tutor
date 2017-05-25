@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 """ 
-Web2Py [[HTML generavimo http://www.web2py.com/books/default/chapter/29/05/the-views#HTML-helpers]] pagalbinės funkcijos (helpers).
+Web2Py [[HTML generavimo http://www.web2py.com/books/default/chapter/29/05/the-views#HTML-helpers]] pagalbinės funkcijos (helpers). 
 """
-# import sys  
-
-# reload(sys)  
-# sys.setdefaultencoding('utf8')
 
 from plugin_introspect import tutor, menu
 

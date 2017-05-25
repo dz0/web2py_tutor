@@ -36,7 +36,8 @@
             
             $('#menu .button').click( function(){ $("#menu .togglable").toggle() });
             $('#codes .button').click( function(){ $("#codes .togglable").toggle() });
-            
+
+            $('#content').balloon({ position: "bottom" });
     });
     </script>
 {{end}}
@@ -51,8 +52,8 @@ Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzd
 
 
 {{#=content}}
-[ Pavyzdys ] <br/><br/>
-{{=DIV( content, _id="content" )}}
+<span class="button">[ Pavyzdys ]</span> <br/>
+{{=DIV( content, _id="content" ,  _title='Galite naudoti Ctrl+Shift+I ("inspect element"), kad peržiūrėtumėte html "vidurius"' )}}
 
 <br />
 {{=DIV( codes, _id="codes" )}}
