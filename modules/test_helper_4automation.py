@@ -122,10 +122,14 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
             t = t.replace('"""', '"')
             return t
 
+        if len(ats) != len(bts):
+            return False
+
         for at, bt in zip(ats, bts):
             if at != bt:
                 bt = map_pyquotes_to_double(bt)
                 at = map_pyquotes_to_double(at)
+                # print "at bt", at, bt
                 if at != bt:
                     return False
                 # else:
@@ -136,33 +140,36 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
 
     # if a_tokens == b_tokens:
     if eq_ignoring_pyquotes_type( a_tokens , b_tokens ):
-        msgs = [  "seems OK, maybe spacing or quotation is mangled.." ]
+        # print  "seems OK, maybe spacing or quotation is mangled.."
+        pass
 
     else:
         a = Counter( a_tokens )
         b = Counter( b_tokens )
         if a == b:
             msgs =[ "Ordering is incorrect" ]
+            # todo: tell what is not ir right place
 
-        unnecessary= a - b
-        missing  = b - a
-        # print "dbg input", input
-        # print "dbg expected", expected
-        # print "dbg unnecessary", unnecessary
-        # print "dbg missing", missing
+        else:
+            unnecessary= a - b
+            missing  = b - a
+            # print "dbg input", input
+            # print "dbg expected", expected
+            # print "dbg unnecessary", unnecessary
+            # print "dbg missing", missing
 
-        if limit_hints:
-            missing = list( missing.keys() )
-            unnecessary = list( unnecessary.keys() )
+            if limit_hints:
+                missing = list( missing.keys() )
+                unnecessary = list( unnecessary.keys() )
 
-            random.shuffle( missing )
-            random.shuffle( unnecessary )
+                random.shuffle( missing )
+                random.shuffle( unnecessary )
 
-            missing = missing[:limit_hints]
-            unnecessary = unnecessary[:limit_hints]
+                missing = missing[:limit_hints]
+                unnecessary = unnecessary[:limit_hints]
 
-        msgs_more = messages_by_fragments(input, required=missing, unnecessary=unnecessary )
-        return msgs + msgs_more
+            msgs = messages_by_fragments(input, expected, required=missing, unnecessary=unnecessary )
+    return msgs
 
 def code_highlight(txt):
     return "<span style='color:blue; font-family: monospace;'>%s</span>" % txt
@@ -186,8 +193,8 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
 
     for item in unnecessary:
         msg = u"%s kaip ir nereikalingas"
-        if item in placeholder:
-            if placeholder.count(item) == 1:
+        if item in result:
+            if result.count(item) == 1:
                 msg = u"prie %s kažko trūksta"
             else:
                 msg = u"kažkuris %s nereikalingas"
