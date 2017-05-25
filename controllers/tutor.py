@@ -57,7 +57,7 @@ def evaluate():
         if request.vars.change_placeholders: # ajax
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
-        # return ""
+        return ""
 
         # deprecated -- for debug purposes..
         if 'wrong' in evaluations:

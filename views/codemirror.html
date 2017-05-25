@@ -61,7 +61,9 @@
                     if ({{=is_placeholder[nr]}} ) {
                         highlight_placeholder(cm, "initial");
                         placeholders['{{=task_key}}'].push( cm );
+                        show_hint(cm, "kažką reik pakeisti");
                     }
+
                     cm.refresh();
                     
             {{  pass }}
