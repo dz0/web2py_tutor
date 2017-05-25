@@ -23,7 +23,7 @@ except ImportError:
 def my_tokenizer( code ):
 
     rez = re.split(r'(\w+)', code) # group alphanumerics to words
-    print(rez)
+    # print(rez)
 
     rez2 = []
     for s in rez:
@@ -93,7 +93,7 @@ def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
     if filter_spaces:
         tokens = [t for t in tokens if t.strip()]
     tokens = [html_escape(t, quote=True).replace("'", "&#x27;")  for t in tokens]
-    print    "dbg tokens polished:", tokens
+    # print    "dbg tokens polished:", tokens
     return tokens
 
 
@@ -128,8 +128,8 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
                 at = map_pyquotes_to_double(at)
                 if at != bt:
                     return False
-                else:
-                    print "quotes match after mapping any type to double"
+                # else:
+                #     print "quotes match after mapping any type to double"
 
         return True
 
