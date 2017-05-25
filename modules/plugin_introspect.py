@@ -12,10 +12,46 @@ from task_parser import task
 # except ImportError as e:
     # print( e )
 
-
 import inspect
 import re
 import os
+
+def get_controller_code( c=None, app=None ):
+    request = current.request
+    app = app or request.application
+    c = c or request.controller
+    fpath = apath('%s/controllers/%s.py' % (app, c), r=request)
+    with open(fpath) as f:
+        code = f.read()
+
+    return code
+
+def get_exposed_function_code(fname, code=None):
+    if code is None:
+        code = get_controller_code()
+
+    regex_myfun_header = re.compile(
+        # r'^def\s+(?P<name>_?[a-zA-Z0-9]\w*)\( *\)\s*:',
+        r'^def\s+(%s)\( *\)\s*:' % fname,
+        flags=re.M)
+    match = regex_myfun_header.search(code)
+    myfun_header = match and match.group(0)
+    start = code.find(myfun_header)
+
+    lines = code[start:].split('\n')
+    result = [lines[0]]
+
+    for line in lines[1:]:
+        if line and line[0] not in " \t\n#":  # if first character is indented or comment -- fixme: multiline strings could be gotchas here
+            break
+        else:
+            result.append(line)
+
+    # todo:  include decorators
+    # prelines = reversed( code[:start].split('\n') )
+
+    return "\n".join(result)
+
 
 def lessons_menu(return_plain=False):
     
@@ -45,7 +81,7 @@ def exposed_functions( ):
     data = open(fpath).read()
     
     items = find_exposed_functions(data)
-    if 'get_active_code' in items:    items.remove( 'get_active_code' )
+
     return items
     
 def menu( ): 
@@ -113,8 +149,10 @@ def tutor(f):
     
 def get_task_code(f, decorate=True):
 
-    code = get_active_code( f, decorate=False) # inspect.getsource( f ) 
-    
+    code = get_active_code( f, decorate=False) # inspect.getsource( f )
+
+    # code = "\n"+code # workaround as otherwise first line dissapears
+
     t = task(  code )
     student_lines = t['student_lines']
     
@@ -170,9 +208,13 @@ def get_active_code(f=None, decorate=True):
             return ""# we don't have info about function
     
 
-    lines, start_line = inspect.getsourcelines( f ) 
-    # code = inspect.getsource( f ) 
-    code = ''.join( lines )
+    code = get_exposed_function_code(f.__name__)
+
+
+    # OPTION2: doesn't refresh without server reload
+    # lines, start_line = inspect.getsourcelines( f )
+    # # code = inspect.getsource( f )
+    # code = ''.join( lines )
     
     # remove some function calls from code
     code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code) 
@@ -180,15 +222,16 @@ def get_active_code(f=None, decorate=True):
     code = re.sub(r"^@show_.+?$", "", code, flags=re.MULTILINE) 
     code = re.sub(r"^@tutor.*?$", "", code, flags=re.MULTILINE) 
     # remove/hide lines by directive "###HIDE"
-    code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE) 
-    
-     
+    code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE)
+
+
     # code = re.sub(r"@show_menu", "", code) 
     # code = re.sub(r"@show_code", "", code) 
     
     if decorate:
         # return  CODE(code, language="python", link='/examples/global/vars/', counter=start_line)
-        return  CODEMIRROR(code)
+        code = CODEMIRROR(code)
+        return code
     else:
         return  code
 

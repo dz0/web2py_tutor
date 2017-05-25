@@ -29,29 +29,35 @@ def evaluate():
 
             if ph == initial_code:
                 state = 'initial'
-                hints = u"kažką reik pakeist.."
+                hints = u"kazką reik pakeist.."
 
             else:
-                problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 )
+                problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 ) # it gives hints about problems
 
                 if problems:
                     state = 'wrong'
-                    hints = u"Laukelis nr. %s: <li>%s </li><br />" % (nr+1, problems)
-                    hints_result += hints
+                    hints = problems.strip()
+                    hints_result += "<br/>  <li>Laukelis nr. %s: <br> %s </li><br />"%(nr+1,  hints)
 
 
                 else: #  ph == answer   might be picky about spacing...
                     state = 'ok'
                     hints = "ok"
-
             evaluations.append(state)
+
+            # hints = xmlescape( hints , quote=True)
+            hints = XML( hints )
+            # hints = XML(unicode(hints), sanitize=False,
+            #         permitted_tags=['a', 'b', 'blockquote', 'br/', 'i', 'li', 'ol', 'ul', 'p', 'cite', 'code', 'pre', 'img/']
+            #             )
+
             js_highlight_result.append( js_tpl_highlight % locals() )
             js_hints_result.append(js_tpl_hints % locals())
 
         if request.vars.change_placeholders: # ajax
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
-        return ""
+        # return ""
 
         # deprecated -- for debug purposes..
         if 'wrong' in evaluations:

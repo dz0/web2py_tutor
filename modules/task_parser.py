@@ -3,7 +3,8 @@ import re
 def task(task_code):
     entity = 'task'
     lines = task_code.split("\n")
-    name = lines.pop(0)
+    if lines[0] .startswith("###TASK"):
+        name = lines.pop(0)
 
     children = placeholders = []
     student_lines = []

@@ -21,4 +21,4 @@ def functions():
         result = x*2    ###PLACEHOLDER:-->    $result = $x*2;
         return result   ###PLACEHOLDER:-->    return $resul;
                         ###PLACEHOLDER:--> }
-    return double( 5 )
+    return double( 7 )
