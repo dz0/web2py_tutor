@@ -26,13 +26,29 @@ def get_controller_code( c=None, app=None ):
 
     return code
 
-def get_exposed_function_code(fname, code=None):
+exposed_functions = {}  # for singleton
+
+def generate_exposed_functions_info():
+
+
+    global exposed_functions
+    exposed_functions = getattr(current, 'exposed_functions', {} )
+    current.exposed_functions = exposed_functions
+    if not exposed_functions:
+        for f in exposed_functions_names():
+            d = exposed_functions[f] = {}
+            d['code'] = code = get_exposed_function_code( f )
+            d['is_task'] = '_task' in f or f.startswith('task')    or "###PLACEHOLDER" in code
+    return exposed_functions
+
+def get_exposed_function_code(fun_name, code=None):
+
     if code is None:
         code = get_controller_code()
 
     regex_myfun_header = re.compile(
         # r'^def\s+(?P<name>_?[a-zA-Z0-9]\w*)\( *\)\s*:',
-        r'^def\s+(%s)\( *\)\s*:' % fname,
+        r'^def\s+(%s)\( *\)\s*:' % fun_name,
         flags=re.M)
     match = regex_myfun_header.search(code)
     myfun_header = match and match.group(0)
@@ -64,14 +80,14 @@ def lessons_menu(return_plain=False):
     controllers  = [ c[:-len('.py')]   for c in os.listdir( dirpath )      if c.startswith('lesson') and c.endswith('.py')]
     controllers.sort()
     
-    menu = [  A(  c[len("lesson"):].title(),     _href=URL(c, 'index') )     for c in controllers ]
+    menu = [  A(  c[len("lesson"):].title(),     _href=URL(c, 'index') )     for c in controllers   ]
     
     if return_plain:
         return controllers
     else:
         return UL(menu)
         
-def exposed_functions( ):
+def exposed_functions_names():
     
     request = current.request
     
@@ -83,20 +99,52 @@ def exposed_functions( ):
     items = find_exposed_functions(data)
 
     return items
-    
-def menu( ): 
+
+
+
+def menu( only_category = False ):
     """gives links to all exposed functions except currently used"""
-    items = exposed_functions( )
+    fun_names = exposed_functions_names()
+
+    generate_exposed_functions_info()
     request = current.request
-    return UL( [
-                  item!=request.function 
-                      and SPAN(   A( item , _href=URL(item)),  "*"*is_task(item) ) 
-                  or item    
-                  for item in items
-              ] )
-    
-def is_task(fname):
-    return '_task' in fname    or    fname.startswith('task')
+
+    htmlized = [
+                  item if item==request.function
+                       else SPAN(   A( item , _href=URL(item)),  "*"*exposed_functions[item]['is_task'] )
+
+                  for item in fun_names
+                  if item != 'index'
+              ]
+
+    ctx  = {'current_cat':None}
+    def transform_to_tree():
+        "group menu items into categories -- if item name starts with _  it means new category"
+        result = []
+        cat = []
+        cat_name = ""
+
+        for name, html in zip( fun_names, htmlized):
+            if name.startswith('_'): # means category
+                result .append ( TOGGLABLE_CONTENT( cat_name, UL(cat)) )  #
+                cat_name = name.replace("_", " ").title()
+                cat = [ ]
+
+            if only_category and name==request.function:
+                return cat_name  # dirty hack to get current category name
+
+            cat.append( html )
+
+        result.append(TOGGLABLE_CONTENT(cat_name, UL(cat)))  # last category
+
+        return result
+
+    if only_category:
+        return transform_to_tree()
+
+    return UL( transform_to_tree() )
+    # return UL( htmlized )
+
 
 
 def TOGGLABLE_CONTENT(name, content):
@@ -106,11 +154,11 @@ def TOGGLABLE_CONTENT(name, content):
     """
     
     return CAT( 
-        BR(),
+
         SPAN( name, _class="button", _onclick=js_toggle, _style="cursor:hand"),
         SPAN( content , _class="togglable")
         # SPAN( content, _class="togglable", _style="display:none" )
-        , BR(), SPAN("", _class="after_togglable")
+        ,SPAN("", _class="after_togglable")
     )
 
 def CODEMIRROR(code, language="python", task_key=None):
@@ -121,11 +169,29 @@ def CODEMIRROR(code, language="python", task_key=None):
     return XML(current.response.render('codemirror.html', dict(code=code, language=language, task_key=task_key)))
     
 
-
+import traceback
 def tutor(f):
     """smart decorator"""
     def result():
-        content = f()
+        try:
+            content = f()
+        except Exception as e:
+            # content = repr( e )
+            tb_str = traceback.format_exc()
+            lines = tb_str.split("\n")
+            # hide path and tutor decorator info
+            for nr, line in enumerate(lines):
+                if 'File "' in line and '/controllers/' in line:
+                    a, b = line.split( 'File "', 1)
+                    _, b = b.split('/controllers/', 1)
+                    lines[nr] = a + 'File "'+b
+
+            tb_str = "\n".join(  lines[:1]+ lines[3:]  ) # hide lines about plugin_introspect
+            content =  CAT( "KLAIDA:", PRE(  tb_str, _style="color:brown" ) )
+
+        if 'plain' in current.request.vars:
+            return content
+
         about = get_module_doc( get_controller_code() )
 
         codes = TOGGLABLE_CONTENT("[ Kodas ]", get_task_code(f))
@@ -135,7 +201,7 @@ def tutor(f):
         menu_ = TOGGLABLE_CONTENT("[ Meniu ]", menu())
         
         # next menu
-        items = exposed_functions( )
+        items = exposed_functions_names()
         req = current.request
         nr = items.index( req.function )
         next = items[nr+1] if nr < len(items)-1  else None
@@ -143,10 +209,17 @@ def tutor(f):
         
         a_next = A("[ Pirmyn ]", _href=URL(next))   if  next!=None  else ""
         a_prev = A("[ Atgal ]", _href=URL(prev))   if  prev!=None  else ""
-        menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
+        navigate_prev_next = CAT( a_prev, " ",  a_next )
+        # menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
+        current_category = menu(only_category=True)
 
 
-        return XML(current.response.render('tutor.html', dict( about=about, content=content, codes=codes, menu=menu_) ) )
+        return XML(current.response.render('tutor.html',
+                                           dict( about=about, content=content, codes=codes, menu=menu_,
+                                                 navigate_prev_next=navigate_prev_next,
+                                                 current_category=current_category
+                                                 )
+                                           ) )
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     
