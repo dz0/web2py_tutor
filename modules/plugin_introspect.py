@@ -97,25 +97,28 @@ def exposed_functions_names():
     data = open(fpath).read()
     
     items = find_exposed_functions(data)
-
+    items = [i for i in items if i != 'index']
     return items
 
 
 
-def menu( only_category = False ):
-    """gives links to all exposed functions except currently used"""
+def menu(only_category = False, item_decorator=None, cat_decorator=None, plain_menu=False):
+    """gives list with links to all exposed functions except currently used
+
+       optionally gives just current categorry
+    """
     fun_names = exposed_functions_names()
 
     generate_exposed_functions_info()
     request = current.request
 
-    htmlized = [
-                  item if item==request.function
-                       else SPAN(   A( item , _href=URL(item)),  "*"*exposed_functions[item]['is_task'] )
+    if item_decorator is None:
+        item_decorator = lambda item: item if item == request.function    else SPAN(A(item, _href=URL(item)), "*" * exposed_functions[item]['is_task'])
 
-                  for item in fun_names
-                  if item != 'index'
-              ]
+    if cat_decorator is None:
+        cat_decorator = lambda cat_name, items: TOGGLABLE_CONTENT( cat_name, UL(items))
+
+    decorated = [item_decorator(item) for item in fun_names]
 
     ctx  = {'current_cat':None}
     def transform_to_tree():
@@ -124,9 +127,10 @@ def menu( only_category = False ):
         cat = []
         cat_name = ""
 
-        for name, html in zip( fun_names, htmlized):
+        for name, html in zip( fun_names, decorated):
             if name.startswith('_'): # means category
-                result .append ( TOGGLABLE_CONTENT( cat_name, UL(cat)) )  #
+                result .append ( cat_decorator( cat_name, cat ) )  #
+                # result .append ( TOGGLABLE_CONTENT( cat_name, UL(cat)) )  #
                 cat_name = name.replace("_", " ").title()
                 cat = [ ]
 
@@ -135,14 +139,24 @@ def menu( only_category = False ):
 
             cat.append( html )
 
-        result.append(TOGGLABLE_CONTENT(cat_name, UL(cat)))  # last category
+        result.append(cat_decorator(cat_name, cat))  # last category
+        # result.append(TOGGLABLE_CONTENT(cat_name, UL(cat)))  # last category
 
         return result
 
     if only_category:
+        current_category = transform_to_tree()
+        return current_category
+
+    if plain_menu:
         return transform_to_tree()
 
-    return UL( transform_to_tree() )
+    if current.request.function in [ 'index', 'menu' ]:
+        lesson_name = request.controller[len("lesson"):]
+        lesson_name = " ".join(lesson_name.split("_")[1:]).title()
+        return CAT(H3(lesson_name), UL( transform_to_tree() ))
+
+    return  UL( transform_to_tree() )
     # return UL( htmlized )
 
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from test_helper_4automation import *
-from gluon.admin import apath
 
 def evaluate():
     
@@ -54,27 +53,32 @@ def evaluate():
             js_highlight_result.append( js_tpl_highlight % locals() )
             js_hints_result.append(js_tpl_hints % locals())
 
-        if evaluations.count('initial') == len(evaluations):
-            js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonuose laukeliuose... ;)")
 
         if evaluations.count('ok') == len(evaluations):
             js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti toliau!")
 
+        elif 'initial' in evaluations:
+        # if evaluations.count('initial') == len(evaluations):
+            js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)")
+
         if request.vars.change_placeholders: # ajax
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
+
+
+        DBG = False
+        if DBG:
+            # deprecated -- for debug purposes..
+            if 'wrong' in evaluations:
+                return CAT( P(B("Užuominos:")), XML(hints_result) )
+
+            if 'initial' in evaluations:
+                return "kažką reikia pakeisti geltonose eilutėse)..."
+
+            if not ( 'wrong' in evaluations or 'initial' in evaluations ) :
+                return "<b>OK :)</b>"
+
         return ""
-
-        # deprecated -- for debug purposes..
-        if 'wrong' in evaluations:
-            return CAT( P(B("Užuominos:")), XML(hints_result) )
-
-        if 'initial' in evaluations:
-            return "kažką reikia pakeisti (geltonam fone)..."
-
-        if not ( 'wrong' in evaluations and 'initial' in evaluations ) :
-            return "<b>OK :)</b>"
-        
           
         
     # code = get_file_function_code( file, function )

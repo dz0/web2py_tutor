@@ -4,8 +4,10 @@
 from plugin_introspect import tutor, menu
 
 
-def index( ): 
-    return menu()
+def index( ):
+    response.view = 'default/index.html'
+    response.title = "Temos"
+    return dict(content=menu())
 
 
 @tutor
@@ -169,3 +171,4 @@ def teksto_formatavimas_su_zodynais():
     age = 36
     
     return "%(name)s turi %(age)s metus. %(name)s kartais vėluoja..." % locals()
+

@@ -1,21 +1,23 @@
 <head>
-
+{{extend 'layout.html'}}
 {{block head}}
-{{
+
+ {{
     CMROOT="/admin/static/codemirror"
     # CMROOT="http://codemirror.net"
-    response.files.append(URL('static','js/jquery.balloon.js'))
-}}
-{{include 'web2py_ajax.html'}}
+ }}
 
   <link rel="stylesheet" href="{{=CMROOT}}/lib/codemirror.css">
+    <script src="{{=URL('static','js/jquery.balloon.js')}}"></script>
+    <script src="{{=URL('static','js/colResizable.min.js')}}"></script>
     <script src="{{=CMROOT}}/lib/codemirror.js"></script>
     <script src="{{=CMROOT}}/addon/edit/matchbrackets.js"></script>
     
     <script src="{{=CMROOT}}/mode/python/python.js"></script>
     <style> 
 
-        .CodeMirror { height: auto; border: 1px solid #ddd; }
+        .CodeMirror { height: auto;  }
+        .code-input {border: 1px solid #ddd;}
         
         .CodeMirror-scroll { max-height: 200px; } 
         .CodeMirror-scroll { min-height: 200px; }
@@ -26,7 +28,18 @@
         #content { padding: 20px; background: #fafafa; }
 
         a {text-decoration: none }
+    
+    
+    /* resize table col for code-result:  colResizable */
+        
+        table.code-with-result td {vertical-align: top}
+        div.padding {padding:20px; } /* colResizable plugin  somehow disables td padding */
+    
+    
+    
     </style>
+    
+    
     <script>
         $( document ).ready(function() {
             $('#menu .togglable').hide(); //css('display', 'none');
@@ -39,13 +52,18 @@
             $('#codes .button').click( function(){ $("#codes .togglable").toggle() });
 
             $('#content').balloon({ position: "bottom" });
+            $('table.code-with-result').colResizable( { 
+                    liveDrag:true,
+                    // gripInnerHtml:"<span style='color:silver'>&#x25BC;</span>", 
+                } );
     });
     </script>
 {{end}}
 
 
-</head>
-<body>
+
+
+
 Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzdžiai kartu su kodu.
 <br > Taip pat bus užduotys, kuriose reikia pabaigti kodo fragmentus, kad jie atitiktų pateiktą pavyzdį.
 
@@ -58,22 +76,36 @@ Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzd
 }}
 
 
-{{=H3(CAT(course , " / ", lesson_name, " / ",  current_category ) )  }}
+{{=H3(CAT(course , " / ", lesson_name, " / ",  current_category + ( " / " * bool(current_category))) , _style="display:inline")  }}
+{{=request.function}}
 
-
+<br ><br>
 {{=navigate_prev_next}} {{ =SPAN( menu, _id="menu" ) }}
 
 <br /><br />
 
-{{=DIV( codes, _id="codes" )}}
+<table class="code-with-result" width="100%">
+<tbody>
+
+<tr>
+    <td style="border-right: 1px dashed silver;">
+        <div class="padding">
+         {{=DIV( codes, _id="codes" )}}  
+        </div>
+    </td>
+    
+    <td> 
+        <div class="padding">
+            <span class="button">[ Rezultatas ({{=A("plain", _href=request.url+"?"+request.env.query_string+"&plain", _style="color: grey")}}) ]</span> <br/>
+            {{=DIV( content, _id="content" ,  _title='Galite naudoti Ctrl+Shift+I ("inspect element"), kad peržiūrėtumėte html "vidurius"' )}}
+        </div>
+      </td>
+</tr>
+</tbody>
+</table>
 
 
-<span class="button">[ Rezultatas ({{=A("plain", _href=request.url+"?"+request.env.query_string+"&plain", _style="color: grey")}}) ]</span> <br/>
-{{=DIV( content, _id="content" ,  _title='Galite naudoti Ctrl+Shift+I ("inspect element"), kad peržiūrėtumėte html "vidurius"' )}}
 <br />
 
 {{#=navigate_prev_next }}
 
-
-
-</body>

@@ -84,6 +84,7 @@
     </script>
     
     <form action="{{=URL('tutor', 'evaluate')}}" method="POST">
+    <div class="code-input">
     {{  placeholder_nr = 0     }}
     {{  for nr, code in enumerate(codes):}}
        {{ extra = {}; 
@@ -96,6 +97,7 @@
        }}
        {{ =TEXTAREA( code, _rows=code.count('\n'), _cols=50, _id="code_%s"%nr, **extra)  }}  
     {{  pass }}
+    </div>
 
     {{=INPUT(_type="hidden", _name="task_key", _value=task_key)}}
     

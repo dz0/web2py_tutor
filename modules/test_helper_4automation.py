@@ -147,7 +147,7 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
         a = Counter( a_tokens )
         b = Counter( b_tokens )
         if a == b:
-            msgs =[ "Ordering is incorrect" ]
+            msgs =[ "Kažką reiktų sukeisti vietomis..." ]
             # todo: tell what is not ir right place
 
         else:
@@ -205,9 +205,9 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
         msgs.append("")
 
     for item in required:
-        msg = "tikimasi daugiau %s"
+        msg = "Tikimasi daugiau %s"
         if not item in placeholder:
-            msg = "tikimasi %s"
+            msg = "Tikimasi %s"
         # msgs .append(  code_highlight(item) + " is expected "  )
         msgs .append( msg % code_highlight(item)  )
 

@@ -87,6 +87,7 @@ from gluon.tools import Auth, Service, PluginManager
 auth = Auth(db, host_names=myconf.get('host.names'))
 service = Service()
 plugins = PluginManager()
+# auth.define_tables() ??
 
 # -------------------------------------------------------------------------
 # create all tables needed by auth if not custom tables
@@ -109,6 +110,7 @@ mail.settings.ssl = myconf.get('smtp.ssl') or False
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
+auth.settings.login_after_registration = True
 
 # -------------------------------------------------------------------------
 # Define your tables below (or better in another model file) for example

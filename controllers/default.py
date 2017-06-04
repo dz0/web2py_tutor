@@ -26,5 +26,9 @@ from plugin_introspect import lessons_menu
     # return UL(menu)
 
 def index():
-    
-    return lessons_menu()
+    response.title = "Pamokos"
+    return dict(content=lessons_menu())
+
+
+def user():
+    return dict(form=auth())

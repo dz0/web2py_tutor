@@ -29,7 +29,7 @@ response.google_analytics_id = None
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    # (T('Home'), False, URL('default', 'index'), [])
 ]
 
 DEVELOPMENT_MENU = True
@@ -38,6 +38,8 @@ DEVELOPMENT_MENU = True
 # ----------------------------------------------------------------------------------------------------------------------
 # provide shortcuts for development. remove in production
 # ----------------------------------------------------------------------------------------------------------------------
+
+from plugin_introspect import lessons_menu, menu,  exposed_functions_names, generate_exposed_functions_info, exposed_functions
 
 def _():
     # ------------------------------------------------------------------------------------------------------------------
@@ -48,38 +50,33 @@ def _():
     # ------------------------------------------------------------------------------------------------------------------
     # useful links to internal and external resources
     # ------------------------------------------------------------------------------------------------------------------
+    def current_lesson_topics():
+        fun_names = exposed_functions_names()
+        exposed_functions = generate_exposed_functions_info()
+
+        # hierarchical
+        topics = menu(only_category=False,
+                      item_decorator=lambda item: ( T(item) , False, URL(item) ),
+                      # item_decorator=lambda item: ( T(item) + "*" * exposed_functions[item]['is_task'], False, URL(item) ),
+                      cat_decorator=lambda cat_name, items: (T(cat_name or ">"), False,  items[0][2], items),
+                      plain_menu=True
+                      )
+        from pprint import pprint
+        pprint(str(topics), indent=4)
+        # flat
+        # topics = [
+        #     (  T(item) + "*" * exposed_functions[item]['is_task'],   False, URL(item)  )
+        #     for item in fun_names
+        # ]
+
+        return topics
+        # LI(_class="divider"),
+
+    topics = current_lesson_topics()
+
     response.menu += [
-        (T('My Sites'), False, URL('admin', 'default', 'site')),
-        (T('This App'), False, '#', [
-            (T('Design'), False, URL('admin', 'default', 'design/%s' % app)),
-            LI(_class="divider"),
-            (T('Controller'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/controllers/%s.py' % (app, ctr))),
-            (T('View'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/views/%s' % (app, response.view))),
-            (T('DB Model'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/models/db.py' % app)),
-            (T('Menu Model'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/models/menu.py' % app)),
-            (T('Config.ini'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/private/appconfig.ini' % app)),
-            (T('Layout'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/views/layout.html' % app)),
-            (T('Stylesheet'), False,
-             URL(
-                 'admin', 'default', 'edit/%s/static/css/web2py-bootstrap3.css' % app)),
-            (T('Database'), False, URL(app, 'appadmin', 'index')),
-            (T('Errors'), False, URL(
-                'admin', 'default', 'errors/' + app)),
-            (T('About'), False, URL(
-                'admin', 'default', 'about/' + app)),
-        ]),
+        (T('Pamokos Temos'), False, '#', topics ),
+
         ('web2py.com', False, '#', [
             (T('Download'), False,
              'http://www.web2py.com/examples/default/download'),
