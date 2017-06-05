@@ -1,6 +1,3 @@
-{{#extend 'layout.html'}}
-
-
 
 {{block code}}
 
@@ -24,64 +21,6 @@
     pass
 }}          
 
-    <script>
-            var placeholders = {};
-            
-            
-            function highlight_placeholder( cm, state ){
-                // highlights background by  correctness state
-                colors = {
-                    'initial': '#FFFFA9',
-                    'wrong': '#FFC0CB',
-                    'ok': '#BBF8BB'
-                    };
-                cm.getScrollerElement().style.background = colors[ state ]  ;  // https://codemirror.net/doc/manual.html Ctrl+F: doc.addLineClass
-            }
-
-            function show_hint( cm, hints ){
-                cm.getScrollerElement().title = hints;  // if hints is ""  should do some trick to prevent balloon with previous contents
-                //$(".CodeMirror-scroll").balloon();  //needs balloon activation once
-
-            }
-
-            window.onload = function () {
-                placeholders['{{=task_key}}'] = [];
-                
-            {{  for nr, code in enumerate(codes):}}
-                    cm = CodeMirror.fromTextArea(document.getElementById('code_{{=nr}}'), {
-                        mode: "python",
-                        theme: "default"
-                        ,height: "dynamic"
-                        // ,viewportMargin: Infinity  // https://codemirror.net/demo/resize.html
-                        //, lineNumbers: true
-                        , readOnly: !{{= is_placeholder[nr] }} 
-                    });
-                    cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*16+25 }};
-                    cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*16+25 }};
-                    if ({{=is_placeholder[nr]}} ) {
-                        highlight_placeholder(cm, "initial");
-                        placeholders['{{=task_key}}'].push( cm );
-                        show_hint(cm, "kažką reik pakeisti");
-                    }
-
-                    cm.refresh();
-                    
-            {{  pass }}
-
-                    $(".CodeMirror-scroll").balloon();  // activate hints via el title
-
-            
-        };
-    
-
-
-    function placeholders_on_submit(task_key){
-        placeholders[task_key].forEach( function ( cm ) {
-            cm.save()
-            highlight_placeholder(cm,  "initial")
-        }); 
-    }
-    </script>
     
     <form action="{{=URL('tutor', 'evaluate')}}" method="POST">
     <div class="code-input">
@@ -95,7 +34,7 @@
               placeholder_nr += 1
           pass
        }}
-       {{ =TEXTAREA( code, _rows=code.count('\n'), _cols=50, _id="code_%s"%nr, **extra)  }}  
+       {{ =TEXTAREA( code, _rows=code.count('\n'), _cols=50, _id="code_%s_%s"%(task_key, nr), **extra)  }}
     {{  pass }}
     </div>
 
@@ -118,6 +57,48 @@
     {{ pass }}
      </form>  
 
+    <script>
+            // some initial stuff moved to tutor_head.html
+            
+            // window.onload = function () {  // problem with multiple 
+            // $( document ).ready( function () // fires too early...
+            placeholders['{{=task_key}}'] = [];
+                
+            {{  for nr, code in enumerate(codes):}}
+                    cm = CodeMirror.fromTextArea(document.getElementById('code_{{=task_key}}_{{=nr}}'), {
+                        mode: "python",
+                        theme: "default"
+                        ,height: "dynamic"
+                        // ,viewportMargin: Infinity  // https://codemirror.net/demo/resize.html
+                        //, lineNumbers: true
+                        , readOnly: !{{= is_placeholder[nr] }} 
+                    });
+                    
+                    // TESTS
+                    cm.getScrollerElement().style.maxHeight = {{ =code.count('\n')*16+25 }};
+                    cm.getScrollerElement().style.minHeight = {{ =code.count('\n')*16+25 }};
+                    // cm.getScrollerElement().style.height = {{ =code.count('\n')*16+25 }};
+                    
+                    if ({{=is_placeholder[nr]}} ) {
+                        highlight_placeholder(cm, "initial");
+                        placeholders['{{=task_key}}'].push( cm );
+                        show_hint(cm, "kažką reik pakeisti");
+                    }
+
+                    cm.refresh();
+                    
+            {{  pass }}
+
+
+            
+        // });
+        // };
+    
+    </script>
+
+
 <div id="results"> </div>
+
+
 {{end}}
 

@@ -28,16 +28,18 @@ def get_controller_code( c=None, app=None ):
 
 exposed_functions = {}  # for singleton
 
-def generate_exposed_functions_info():
-
-
+def generate_exposed_functions_info(controller=None):
+    controller = controller or current.request.controller
     global exposed_functions
     exposed_functions = getattr(current, 'exposed_functions', {} )
     current.exposed_functions = exposed_functions
     if not exposed_functions:
-        for f in exposed_functions_names():
+        full_file_code = get_controller_code(controller)
+
+        for f in exposed_functions_names(controller):
             d = exposed_functions[f] = {}
-            d['code'] = code = get_exposed_function_code( f )
+
+            d['code'] = code = get_exposed_function_code( f, code=full_file_code )
             d['is_task'] = '_task' in f or f.startswith('task')    or "###PLACEHOLDER" in code
     return exposed_functions
 
@@ -87,13 +89,13 @@ def lessons_menu(return_plain=False):
     else:
         return UL(menu)
         
-def exposed_functions_names():
+def exposed_functions_names(controller=None):
     
     request = current.request
     
     app = request.application
-    c = request.controller
-    fpath = apath('%s/controllers/%s.py' % (app, c), r=request)
+    controller = controller or request.controller
+    fpath = apath('%s/controllers/%s.py' % (app, controller), r=request)
     data = open(fpath).read()
     
     items = find_exposed_functions(data)
@@ -206,10 +208,16 @@ def tutor(f):
         if 'plain' in current.request.vars:
             return content
 
+
+
         about = get_module_doc( get_controller_code() )
 
         codes = TOGGLABLE_CONTENT("[ Kodas ]", get_task_code(f))
-        
+
+        if 'plain_item' in current.request.vars: # for overview functionallity -- when all tasks in same page -- called via LOAD
+            return XML(current.response.render('tutor_item.html',
+                                                dict(content=content, codes=codes)
+                                               ))
         # menu
          
         menu_ = TOGGLABLE_CONTENT("[ Meniu ]", menu())
@@ -237,9 +245,12 @@ def tutor(f):
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     
-def get_task_code(f, decorate=True):
+def get_task_code(f=None, code=None, decorate=True, task_key=None):
 
-    code = get_active_code( f, decorate=False) # inspect.getsource( f )
+    if code is None:
+        code = get_active_code( f, decorate=False) # inspect.getsource( f )
+    else:
+        code = get_active_code(code=code, decorate=False)  # inspect.getsource( f )
 
     # code = "\n"+code # workaround as otherwise first line dissapears
 
@@ -256,7 +267,8 @@ def get_task_code(f, decorate=True):
     req = current.request
     session = current.session
 
-    task_key = req.controller +'/'+ req.function
+    if task_key is None:
+        task_key = req.controller +'/'+ req.function
 
     session.setdefault( 'answers', {} )
     session.answers[ task_key ]  = [p['expected'] for p in t['placeholders'] ]
@@ -285,20 +297,20 @@ def get_task_code(f, decorate=True):
         return chunks
 
     
-def get_active_code(f=None, decorate=True):  
+def get_active_code(f=None, code=None, decorate=True):
     """Gets code of either the request.function (it it is the callee) or the provided function"""
 
-    
-    if f is None:
-        request = current.request
-        name = inspect.currentframe().f_back.f_code.co_name
-        if request.function == name:  # if the callee is active function
-            f = globals()[request.function]
-        else:
-            return ""# we don't have info about function
-    
+    if code is None:
+        if f is None:
+            request = current.request
+            name = inspect.currentframe().f_back.f_code.co_name
+            if request.function == name:  # if the callee is active function
+                f = globals()[request.function]
+            else:
+                return ""# we don't have info about function
 
-    code = get_exposed_function_code(f.__name__)
+
+        code = get_exposed_function_code(f.__name__)
 
 
     # OPTION2: doesn't refresh without server reload

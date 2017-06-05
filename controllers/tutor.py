@@ -57,7 +57,7 @@ def evaluate():
         if evaluations.count('ok') == len(evaluations):
             js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti toliau!")
 
-        elif 'initial' in evaluations:
+        elif 'initial' in evaluations and not 'wrong' in evaluations:
         # if evaluations.count('initial') == len(evaluations):
             js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)")
 
@@ -89,3 +89,16 @@ def evaluate():
             answers= session.answers        
                 ) )
     
+
+def overview():
+    """Lists all tasks in one page. (but doesn't interact well)"""
+    # TODO: fix ajax  https://groups.google.com/d/msg/web2py/YyVilc2ywdg/ZLtN3Gg3Ft0J
+    # TODO: fix ?plain link in results
+    from plugin_introspect import get_task_code
+    lesson = request.args[0] # controller with lesson contents
+    # lesson = request.vars.lesson_controller # controller with lesson contents
+    fun_names = exposed_functions_names( controller=lesson )
+    exposed_functions = generate_exposed_functions_info( controller=lesson )
+    examples_codes = [ get_task_code(code=exposed_functions[f]['code'], task_key=lesson+'/'+f, decorate=True) for f in fun_names ]
+    results_urls =  [ URL(lesson, f, vars=dict(plain=1))       for f in fun_names ]
+    return response.render('tutor.html', dict(lesson=lesson, fun_names=fun_names, examples_codes=examples_codes, results_urls=results_urls) )

@@ -32,7 +32,7 @@ response.menu = [
     # (T('Home'), False, URL('default', 'index'), [])
 ]
 
-DEVELOPMENT_MENU = True
+DEVELOPMENT_MENU = False
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -40,6 +40,37 @@ DEVELOPMENT_MENU = True
 # ----------------------------------------------------------------------------------------------------------------------
 
 from plugin_introspect import lessons_menu, menu,  exposed_functions_names, generate_exposed_functions_info, exposed_functions
+
+def tutor_menu():
+    if request.controller.startswith('lesson'): # and request.function not in ['index', 'menu']:
+        def current_lesson_topics():
+            fun_names = exposed_functions_names()
+            exposed_functions = generate_exposed_functions_info()
+
+            # hierarchical
+            topics = menu(only_category=False,
+                          # item_decorator=lambda item: ( T(item) , False, URL(item) ),
+                          item_decorator=lambda item: ( T(item) + "*" * exposed_functions[item]['is_task'], False, URL(item) ),
+                          cat_decorator=lambda cat_name, items: (T(cat_name or ">"), False,  items[0][2], items),
+                          plain_menu=True
+                          )
+            # from pprint import pprint
+            # pprint(str(topics), indent=4)
+
+            # flat
+            # topics = [
+            #     (  T(item) + "*" * exposed_functions[item]['is_task'],   False, URL(item)  )
+            #     for item in fun_names
+            # ]
+
+            return topics
+            # LI(_class="divider"),
+
+        topics = current_lesson_topics()
+
+        response.menu.append(   (T('Pamokos Temos'), False, '#', topics)   )
+
+tutor_menu()
 
 def _():
     # ------------------------------------------------------------------------------------------------------------------
@@ -50,32 +81,8 @@ def _():
     # ------------------------------------------------------------------------------------------------------------------
     # useful links to internal and external resources
     # ------------------------------------------------------------------------------------------------------------------
-    def current_lesson_topics():
-        fun_names = exposed_functions_names()
-        exposed_functions = generate_exposed_functions_info()
-
-        # hierarchical
-        topics = menu(only_category=False,
-                      item_decorator=lambda item: ( T(item) , False, URL(item) ),
-                      # item_decorator=lambda item: ( T(item) + "*" * exposed_functions[item]['is_task'], False, URL(item) ),
-                      cat_decorator=lambda cat_name, items: (T(cat_name or ">"), False,  items[0][2], items),
-                      plain_menu=True
-                      )
-        from pprint import pprint
-        pprint(str(topics), indent=4)
-        # flat
-        # topics = [
-        #     (  T(item) + "*" * exposed_functions[item]['is_task'],   False, URL(item)  )
-        #     for item in fun_names
-        # ]
-
-        return topics
-        # LI(_class="divider"),
-
-    topics = current_lesson_topics()
 
     response.menu += [
-        (T('Pamokos Temos'), False, '#', topics ),
 
         ('web2py.com', False, '#', [
             (T('Download'), False,
