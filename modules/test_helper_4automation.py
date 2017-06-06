@@ -175,7 +175,7 @@ def code_highlight(txt):
     return "<span style='color:blue; font-family: monospace;'>%s</span>" % txt
 
 def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[]):
-    
+
     msgs = []
 
     if result and  result in placeholder    and  len(placeholder) > len(result):
@@ -191,6 +191,7 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
     if not isinstance(required, (list, tuple)):
         required = [required]
 
+    # TODO: for analysis also include all placeholder tokens
     for item in unnecessary:
         msg = u"%s kaip ir nereikalingas"
         if item in result:
@@ -208,6 +209,13 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
         msg = "Tikimasi daugiau %s"
         if not item in placeholder:
             msg = "Tikimasi %s"
+        unnecessary_having_fragments_of_item = [un_item for un_item in unnecessary if item in un_item]
+        # todo:  loop over tokens instead of placeholder.count(item)
+        if placeholder.count(item) == len(unnecessary_having_fragments_of_item):
+            msg = "Tikimasi %s"
+            # if len(unnecessary_having_fragments_of_item) == 1: # simplest case
+            #     msg = "Vietoj "+code_highlight(unnecessary_having_fragments_of_item[0]) +" tikimasi %s"
+
         # msgs .append(  code_highlight(item) + " is expected "  )
         msgs .append( msg % code_highlight(item)  )
 

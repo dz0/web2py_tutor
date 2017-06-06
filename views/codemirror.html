@@ -51,7 +51,7 @@
             js_save = "placeholders_on_submit('%s'); "%task_key
             # call stuff
             js_get_hints = "ajax('%s', ['task_key', 'placeholder'], 'results'); "% URL('tutor', 'evaluate')  # deprecated -- for debug purposes
-            js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'change_placeholders':1} )
+            js_highligth = "ajax('%s', ['task_key', 'placeholder'], ':eval'); "% URL('tutor', 'evaluate', vars={'mark_placeholders':1} )
         }}
         {{=INPUT(_type="submit", _onclick= js_save+js_get_hints + js_highligth +" return false;" )}}
     {{ pass }}

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from test_helper_4automation import *
 
+
+
+
+
 def evaluate():
     
     # return dict(a="bla", vars= request.vars)
@@ -8,7 +12,7 @@ def evaluate():
     placeholders = request.vars.placeholder
     if not isinstance( placeholders, (list, tuple) ):
         placeholders = [ placeholders ]  
-    
+
     answers= session.answers
     initial_codes= session.initial_codes
 
@@ -61,14 +65,28 @@ def evaluate():
         # if evaluations.count('initial') == len(evaluations):
             js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)")
 
-        if request.vars.change_placeholders: # ajax
+        def apply_db():
+            if auth.is_logged_in():
+                db.learning.update_or_insert(  db.learning.task_key==task_key,
+                    # user_id from default
+                    task_key=task_key,
+                    responses=placeholders,
+                    evaluations=evaluations,
+                    # tries_count= ,
+                    mark=int(100*evaluations.count('ok')/len(evaluations))
+                )
+                db(db.learning.task_key==task_key).update(tries_count=db.learning.tries_count + 1)
+                # rec.update_record( tries_count= rec.tries_count+1 )
+
+        if request.vars.mark_placeholders: # ajax
+            apply_db()
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
 
 
         DBG = False
         if DBG:
-            # deprecated -- for debug purposes..
+            # deprecated nonajax -- for debug purposes..
             if 'wrong' in evaluations:
                 return CAT( P(B("Užuominos:")), XML(hints_result) )
 

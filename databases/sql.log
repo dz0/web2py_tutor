@@ -53,3 +53,97 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
+timestamp: 2017-06-07T02:12:11.606613
+CREATE TABLE learning(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_key CHAR(512)
+);
+success!
+timestamp: 2017-06-07T02:14:01.311327
+ALTER TABLE learning ADD user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ;
+success!
+success!
+success!
+success!
+timestamp: 2017-06-07T02:16:21.483891
+ALTER TABLE learning ADD evaluation TEXT;
+timestamp: 2017-06-07T02:16:21.489639
+ALTER TABLE learning ADD responses TEXT;
+success!
+success!
+timestamp: 2017-06-07T02:27:30.121507
+ALTER TABLE learning ADD evaluations TEXT;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-06-07T02:35:02.838175
+ALTER TABLE learning ADD tries_count INTEGER;
+timestamp: 2017-06-07T02:35:02.843095
+ALTER TABLE learning ADD total_mark_percent INTEGER;
+success!
+success!
+success!
+timestamp: 2017-06-07T02:40:24.444334
+ALTER TABLE learning ADD mark INTEGER;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-06-07T02:46:08.268707
+ALTER TABLE learning ADD tries_count2 CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
