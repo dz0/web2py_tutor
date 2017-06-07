@@ -147,3 +147,47 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2017-06-07T03:40:18.923349
+CREATE TABLE learn(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    task_key CHAR(512),
+    responses TEXT,
+    evaluations TEXT,
+    mark INTEGER,
+    tries_count INTEGER
+);
+success!

@@ -129,7 +129,7 @@ auth.settings.login_after_registration = True
 # >>> for row in rows: print row.id, row.myfield
 # -------------------------------------------------------------------------
 
-db.define_table('learning',
+db.define_table('learn',
                     Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None ),
                     # Field('user_id', "integer", default= auth_user.id if ),
                     Field('task_key', 'string'),
@@ -141,8 +141,8 @@ db.define_table('learning',
 
 from simplejson import loads, dumps
 for field in ['responses', 'evaluations']:
-    db.learning[field].filter_in = lambda obj, dumps=dumps: dumps(obj)
-    db.learning[field].filter_out = lambda txt, loads=loads: loads(txt)
+    db.learn[field].filter_in = lambda obj, dumps=dumps: dumps(obj)
+    db.learn[field].filter_out = lambda txt, loads=loads: loads(txt)
 # -------------------------------------------------------------------------
 # after defining tables, uncomment below to enable auditing
 # -------------------------------------------------------------------------

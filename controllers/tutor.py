@@ -2,8 +2,28 @@
 from test_helper_4automation import *
 
 
+def placeholders_fill_in_last_response():
+    """should be called via ajax (similar to evaluate) """
+    task_key = request.vars.task_key
 
+    if auth.is_logged_in():
+        rows = db(db.learn.task_key == task_key, db.learn.user_id==auth.user_id).select()
+        if len(rows) > 1:
+            raise "DB error: learn table has too many (%s) entries with task_key=%s, user_id=%s " % (len(rows), task_key, auth.user_id)
 
+        if len(rows) == 1:
+            responses = rows.first().responses
+            evaluations = rows.first().evaluations
+            js_tpl_fillin = "    fill_in_placeholder( placeholders['%(task_key)s'][%(nr)s],   '%(response)s' ); \n "
+            js_tpl_highlight = "    highlight_placeholder( placeholders['%(task_key)s'][%(nr)s],   '%(state)s' );\n"
+
+            js_result_fillin = []
+            js_result_highlight = []
+            for nr, response, state in zip(range(len(responses)), responses, evaluations):
+                js_result_fillin.append(js_tpl_fillin % locals())
+                js_result_highlight.append( js_tpl_highlight % locals() )
+
+            return ''.join(js_result_fillin+['\n']+js_result_highlight)
 
 def evaluate():
     
@@ -67,7 +87,15 @@ def evaluate():
 
         def apply_db():
             if auth.is_logged_in():
-                db.learning.update_or_insert(  db.learning.task_key==task_key,
+                query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
+                print "\ndb.learn.responses==placeholders"
+                print db.learn.responses
+                print placeholders
+                rows_same = db( query_unique_task_user & (db.learn.responses==placeholders) ).select()
+                if len(rows_same):  # if we didn't change placeholders since last time
+                    return
+
+                db.learn.update_or_insert(  query_unique_task_user ,
                     # user_id from default
                     task_key=task_key,
                     responses=placeholders,
@@ -75,7 +103,7 @@ def evaluate():
                     # tries_count= ,
                     mark=int(100*evaluations.count('ok')/len(evaluations))
                 )
-                db(db.learning.task_key==task_key).update(tries_count=db.learning.tries_count + 1)
+                db(db.learn.task_key==task_key).update(tries_count=db.learn.tries_count + 1)
                 # rec.update_record( tries_count= rec.tries_count+1 )
 
         if request.vars.mark_placeholders: # ajax

@@ -44,6 +44,15 @@
     <script>
         var placeholders = {};
 
+        function fill_in_placeholder( cm, text ){
+            // fills in if previous response is available
+
+            // cm.getScrollerElement().innerHTML = text ;  
+            cm.setValue( text ) ;   // http://jsfiddle.net/aljordan82/0v5qxtev/
+            cm.save();
+            cm.refresh();  // maybe unnecessary
+        }
+
         function highlight_placeholder( cm, state ){
             // highlights background by  correctness state
             colors = {
