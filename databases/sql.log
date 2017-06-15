@@ -191,3 +191,11 @@ CREATE TABLE learn(
     tries_count INTEGER
 );
 success!
+timestamp: 2017-06-15T12:48:25.814696
+CREATE TABLE chat(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_name CHAR(512),
+    msg CHAR(512),
+    moment TIMESTAMP
+);
+success!

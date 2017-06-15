@@ -186,8 +186,14 @@ def CODEMIRROR(code, language="python", task_key=None):
     
 
 import traceback
-def tutor(f):
+import functools
+
+def tutor(f=None, extra_files=None):
     """smart decorator"""
+
+    if f is None:  # a hack to allow decorate with syntax:    @tutor(extra_files=['models/model.py', 'views/view.html'])
+        return functools.partial(tutor, extra_files=extra_files)
+
     def result():
         try:
             content = f()
@@ -212,7 +218,19 @@ def tutor(f):
 
         about = get_module_doc( get_controller_code() )
 
-        codes = TOGGLABLE_CONTENT("[ Kodas ]", get_task_code(f))
+        task_code = get_task_code(f)
+        if extra_files:
+            extra_codes = []
+            request = current.request
+            for fname in extra_files:
+                fpath = apath('%s/%s' % (request.application, fname), r=request)
+                with open(fpath) as file:
+                    code = file.read()
+                    extra_codes.append( CAT(BR(), SPAN(fname), CODEMIRROR(code, task_key="extra")) ) # TODO maybe refactro task_key usage
+
+
+            task_code = CAT( task_code, *extra_codes )
+        codes = TOGGLABLE_CONTENT("[ Kodas ]", task_code)
 
         if 'plain_item' in current.request.vars: # for overview functionallity -- when all tasks in same page -- called via LOAD
             return XML(current.response.render('tutor_item.html',
@@ -245,7 +263,7 @@ def tutor(f):
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     
-def get_task_code(f=None, code=None, decorate=True, task_key=None):
+def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=None):
 
     if code is None:
         code = get_active_code( f, decorate=False) # inspect.getsource( f )
