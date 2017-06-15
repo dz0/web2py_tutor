@@ -24,7 +24,7 @@ def forma():
     elif form.errors:
         response.flash = "Pataisykite duomenis"
     
-    return CAT(
+    return CAT(                                          # CAT sujungia kelis elementus
             LOAD(f='list', vars={'plain':1}, ajax=True), # užkrauna kitos kontrolerio funkcijos rezultatą 
             form, 
            )
@@ -51,9 +51,8 @@ def list():
         """)
         
     
-    return CAT(  # CAT sujungia kelis elementus
+    return CAT(  
                 UL( messages ), style, 
             )
             
-            # LOAD(f='add_msg', vars={'plain':1}) # užkrauna kitos kontrolerio funkcijos rezultatą 
             
