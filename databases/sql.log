@@ -199,3 +199,42 @@ CREATE TABLE chat(
     moment TIMESTAMP
 );
 success!
+timestamp: 2017-06-15T18:55:16.772092
+ALTER TABLE chat ADD atsiliepimas CHAR(512);
+timestamp: 2017-06-15T18:55:16.818280
+ALTER TABLE chat ADD vardas CHAR(512);
+timestamp: 2017-06-15T18:55:16.822136
+ALTER TABLE chat ADD laikas TIMESTAMP;
+timestamp: 2017-06-15T18:55:16.826112
+ALTER TABLE chat ADD email CHAR(512);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
