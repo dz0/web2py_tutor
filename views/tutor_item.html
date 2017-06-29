@@ -15,12 +15,15 @@
         </div>
     </td>
     
+    {{ if 'inject_tutor_as_block' not in globals() or inject_tutor_as_block==False: }}
     <td> 
         <div class="padding">
             <span class="button">[ Rezultatas ({{=A("plain", _href=request.url+"?"+request.env.query_string+"&plain", _style="color: grey")}}) ]</span> <br/>
             {{=DIV( content, _id="content" ,  _title='Galite naudoti Ctrl+Shift+I ("inspect element"), kad peržiūrėtumėte html "vidurius"' )}}
         </div>
-      </td>
+    </td>
+    {{pass}}
+      
 </tr>
 </tbody>
 </table>

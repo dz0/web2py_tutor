@@ -188,15 +188,31 @@ def CODEMIRROR(code, language="python", task_key=None):
 import traceback
 import functools
 
-def tutor(f=None, extra_files=None):
+def tutor(f=None, extra_files=None, inject_tutor_as_block=False):
     """smart decorator"""
 
     if f is None:  # a hack to allow decorate with syntax:    @tutor(extra_files=['models/model.py', 'views/view.html'])
-        return functools.partial(tutor, extra_files=extra_files)
+        return functools.partial(tutor, extra_files=extra_files, inject_tutor_as_block=inject_tutor_as_block)
 
     def result():
         try:
             content = f()
+            if isinstance(content, dict):
+                # req = current.request
+                # view_root = apath("%s/views/" % (req.application), r=req)
+                # view_file = "%s/%s.html" % (req.controller, f.__name__)
+                # if os.path.isfile( view_root + view_file  ):
+                #     content =  XML(current.response.render(
+                #                         view_file,
+                #                         content
+                #                 ))
+                # else:
+                    content = current.response.render(
+                        # 'generic.html',
+                        content
+                    )
+
+
         except Exception as e:
             # content = repr( e )
             tb_str = traceback.format_exc()
@@ -230,6 +246,7 @@ def tutor(f=None, extra_files=None):
 
 
             task_code = CAT( task_code, *extra_codes )
+
         codes = TOGGLABLE_CONTENT("[ Kodas ]", task_code)
 
         if 'plain_item' in current.request.vars: # for overview functionallity -- when all tasks in same page -- called via LOAD
@@ -253,13 +270,25 @@ def tutor(f=None, extra_files=None):
         # menu_ = CAT( BR(), a_prev, a_next,  BR(), menu_ )
         current_category = menu(only_category=True)
 
+        if inject_tutor_as_block:
+            # injects tutor as floating block into any view
+            tutor_content = XML(current.response.render('tutor_inject_as_block.html',
+                                               dict( inject_tutor_as_block=True, # content=None,
+                                                     about="", codes=codes, menu=menu_,
+                                                     navigate_prev_next=navigate_prev_next,
+                                                     current_category=current_category
+                                                     )
+                                               ) )
+            return CAT( XML(content) , DIV(tutor_content) ) # TODO better inject into body, than append to html?
 
-        return XML(current.response.render('tutor.html',
-                                           dict( about=about, content=content, codes=codes, menu=menu_,
-                                                 navigate_prev_next=navigate_prev_next,
-                                                 current_category=current_category
-                                                 )
-                                           ) )
+
+        else:
+            return XML(current.response.render('tutor.html',
+                                               dict( about=about, content=XML(content), codes=codes, menu=menu_,
+                                                     navigate_prev_next=navigate_prev_next,
+                                                     current_category=current_category
+                                                     )
+                                               ) )
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     

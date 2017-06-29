@@ -1,0 +1,209 @@
+
+{{# when injecting into rendered view, it shouldn't extend 'layout.html' }}
+    
+{{include 'web2py_ajax.html'}}
+{{include 'tutor_head.html'}}    
+
+<!--
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+-->
+<!--
+  <link rel="stylesheet" href="/resources/demos/style.css">
+-->
+<!--
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+-->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<style>
+.ui-dialog .ui-dialog-buttonpane button {
+	margin: .5em .4em .5em 0;
+	cursor: pointer;
+}
+.ui-draggable .ui-dialog-titlebar {
+	cursor: move;
+}
+.ui-draggable-handle {
+	-ms-touch-action: none;
+	touch-action: none;
+    background: #efefef;
+}
+
+.ui-dialog-content{
+    padding: 5px;
+}
+
+.ui-dialog{
+    border: 1px solid silver;
+}
+
+/**********************************/
+.ui-dialog .ui-resizable-n {
+	height: 2px;
+	top: 0;
+}
+.ui-dialog .ui-resizable-e {
+	width: 2px;
+	right: 0;
+}
+.ui-dialog .ui-resizable-s {
+	height: 2px;
+	bottom: 0;
+}
+.ui-dialog .ui-resizable-w {
+	width: 2px;
+	left: 0;
+}
+.ui-dialog .ui-resizable-se,
+.ui-dialog .ui-resizable-sw,
+.ui-dialog .ui-resizable-ne,
+.ui-dialog .ui-resizable-nw {
+	width: 7px;
+	height: 7px;
+}
+.ui-dialog .ui-resizable-se {
+	right: 0;
+	bottom: 0;
+}
+.ui-dialog .ui-resizable-sw {
+	left: 0;
+	bottom: 0;
+}
+.ui-dialog .ui-resizable-ne {
+	right: 0;
+	top: 0;
+}
+.ui-dialog .ui-resizable-nw {
+	left: 0;
+	top: 0;
+}
+.ui-draggable .ui-dialog-titlebar {
+	cursor: move;
+}
+.ui-draggable-handle {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.ui-resizable {
+	position: relative;
+}
+.ui-resizable-handle {
+	position: absolute;
+	font-size: 0.1px;
+	display: block;
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.ui-resizable-disabled .ui-resizable-handle,
+.ui-resizable-autohide .ui-resizable-handle {
+	display: none;
+}
+.ui-resizable-n {
+	cursor: n-resize;
+	height: 7px;
+	width: 100%;
+	top: -5px;
+	left: 0;
+}
+.ui-resizable-s {
+	cursor: s-resize;
+	height: 7px;
+	width: 100%;
+	bottom: -5px;
+	left: 0;
+}
+.ui-resizable-e {
+	cursor: e-resize;
+	width: 7px;
+	right: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-w {
+	cursor: w-resize;
+	width: 7px;
+	left: -5px;
+	top: 0;
+	height: 100%;
+}
+.ui-resizable-se {
+	cursor: se-resize;
+	width: 12px;
+	height: 12px;
+	right: 1px;
+	bottom: 1px;
+}
+.ui-resizable-sw {
+	cursor: sw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	bottom: -5px;
+}
+.ui-resizable-nw {
+	cursor: nw-resize;
+	width: 9px;
+	height: 9px;
+	left: -5px;
+	top: -5px;
+}
+.ui-resizable-ne {
+	cursor: ne-resize;
+	width: 9px;
+	height: 9px;
+	right: -5px;
+	top: -5px;
+}
+
+
+</style>
+
+
+<div id="tutor">
+    <div class="togglable">    
+        {{include 'tutor_plain.html'}}
+    </div>
+<!--
+    <div class="button"   style="cursor:hand" onclick="el_style=this.previousElementSibling.style; d=el_style.display;  el_style.display = (d=='block'||d=='') ? 'none': 'block';">
+    [ Suskleist/išskleist ]
+    </div>
+-->
+
+</div>
+
+  <script>    $( "#tutor" ).dialog(
+  {
+
+       buttons: [
+            {
+                text: " web2py Tutor",
+                click: function(  ) {
+                    
+                }
+            },
+            {
+                text: "Suskleist",
+                icon: "ui-icon-minimize",
+                click: function(  ) {
+                    $('#tutor').hide();
+                    
+                }
+            },
+            {
+                text: "Išskleist",
+                icon: "ui-icon-maximize",
+                click: function(  ) {
+                   $('#tutor').show();
+                }
+            }
+        ],
+        create: function( event, ui ) {
+            $('.ui-dialog-titlebar-close').hide();
+            $('.ui-dialog-title').hide();
+        	$('.ui-dialog-buttonset').prependTo('.ui-dialog-titlebar');
+        }, 
+        
+        closeText: "x",
+         minWidth: 600,
+    }
+  
+   ); </script>

@@ -4,54 +4,7 @@
     {{include 'tutor_head.html'}}
 {{end}}
 
-
-
-
-
 Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzdžiai kartu su kodu.
 <br > Taip pat bus užduotys, kuriose reikia pabaigti kodo fragmentus, kad jie atitiktų pateiktą pavyzdį.
 
-{{=MARKMIN( about , BR() ) if globals().get('about') else '' }}
-
-{{ course = A("Pamokos", _href=URL('default', 'index')) }}
-
-
-
-
-
-
-<br /><br />
-
-
-{{if request.controller == 'tutor' and request.function == 'overview':}}
-
-    {{ lesson_name = lesson[len("lesson"):]
-      lesson_name = " ".join(lesson_name.split("_")[1:]) .title()
-    }}
-   {{=H3(CAT(course , " / ", lesson_name )) }}
-    {{ for f, codes, result_url  in zip( fun_names, examples_codes, results_urls):  }}
-        {{=A(f, _href=URL(lesson, f)) }}
-        {{ =XML( response.render('tutor_item.html', dict(codes=codes, content=LOAD(url=result_url, ajax=True))) ) }}  <br />
-        {{ #=LOAD(url=result_url, ajax=True) }}  <br />
-    {{ pass }}
-    
-{{else:}}
-
-    {{ lesson_name = request.controller[len("lesson"):]
-      lesson_name = " ".join(lesson_name.split("_")[1:]) .title()
-    }}
-
-    {{=H3(CAT(course , " / ", lesson_name, " / ",  current_category + ( " / " * bool(current_category))) , _style="display:inline")  }}
-    {{=request.function}}
-
-    <br ><br>
-    {{=navigate_prev_next}} {{ =SPAN( menu, _id="menu" ) }}
-
-    {{include 'tutor_item.html'}}  
-{{pass}}
-
-<br />
-
-{{=response.toolbar()}}
-
-
+{{include 'tutor_plain.html'}}

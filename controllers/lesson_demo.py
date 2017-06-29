@@ -9,6 +9,10 @@ def index( ):
     response.title = "Temos"
     return dict(content=menu())
 
+@tutor(inject_tutor_as_block=True)
+def dict_():
+    return {'content':"bla",'a':5}
+
 
 @tutor
 def hello():    # def - nuo žodžio "define" - aprašo funkciją
