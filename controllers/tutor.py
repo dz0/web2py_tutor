@@ -79,7 +79,7 @@ def evaluate():
 
 
         if evaluations.count('ok') == len(evaluations):
-            js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti toliau!")
+            js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti pirmyn!")
 
         elif 'initial' in evaluations and not 'wrong' in evaluations:
         # if evaluations.count('initial') == len(evaluations):

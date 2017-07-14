@@ -188,11 +188,11 @@ def CODEMIRROR(code, language="python", task_key=None):
 import traceback
 import functools
 
-def tutor(f=None, extra_files=None, inject_tutor_as_block=False):
+def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=False):
     """smart decorator"""
 
     if f is None:  # a hack to allow decorate with syntax:    @tutor(extra_files=['models/model.py', 'views/view.html'])
-        return functools.partial(tutor, extra_files=extra_files, inject_tutor_as_block=inject_tutor_as_block)
+        return functools.partial(tutor, extra_files=extra_files, inject_tutor_as_block=inject_tutor_as_block, imitateCLI=imitateCLI)
 
     def result():
         try:
@@ -234,7 +234,7 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False):
 
         about = get_module_doc( get_controller_code() )
 
-        task_code = get_task_code(f)
+        task_code = get_task_code(f, imitateCLI=imitateCLI)
         if extra_files:
             extra_codes = []
             request = current.request
@@ -292,12 +292,12 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False):
         # return  gluon.template.render(content='...', context=<vars>)
     return result 
     
-def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=None):
+def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=None, imitateCLI=False):
 
     if code is None:
-        code = get_active_code( f, decorate=False) # inspect.getsource( f )
+        code = get_active_code( f, decorate=False, imitateCLI=imitateCLI) # inspect.getsource( f )
     else:
-        code = get_active_code(code=code, decorate=False)  # inspect.getsource( f )
+        code = get_active_code(code=code, decorate=False, imitateCLI=imitateCLI)  # inspect.getsource( f )
 
     # code = "\n"+code # workaround as otherwise first line dissapears
 
@@ -344,7 +344,7 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
         return chunks
 
     
-def get_active_code(f=None, code=None, decorate=True):
+def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     """Gets code of either the request.function (it it is the callee) or the provided function"""
 
     if code is None:
@@ -374,6 +374,17 @@ def get_active_code(f=None, code=None, decorate=True):
     code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE)
     code = re.sub(r"^(\s*).*?###REPLACE:?\s*?(.*?)$", r"\1\2", code, flags=re.MULTILINE)
 
+    if imitateCLI:
+        # hide def
+        code = re.sub(r"^def.*$", "", code, flags=re.MULTILINE)
+        code = code.lstrip()
+        
+        # dedent by 4 spaces:
+        code = re.sub(r"^    (.*)$", r"\1", code, flags=re.MULTILINE)
+        
+        # convert return to print (it should be on last line) # todo: maybe just hide it?
+        # code = code.rstrip().replace( 'return', 'print(' ) + ' )'
+        code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
 
     # code = re.sub(r"@show_menu", "", code) 
     # code = re.sub(r"@show_code", "", code) 

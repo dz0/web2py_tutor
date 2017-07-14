@@ -10,6 +10,8 @@ def index( ):
     return dict(content=menu())
 
 
+
+
 @tutor
 def hello():    # def - nuo žodžio "define" - aprašo funkciją
     """URL pabaigoje "hello", todėl iškviečiama funkcija "hello()" """
@@ -150,7 +152,19 @@ def _duomenu_strukturos():
 @tutor
 def sarasai():
     pass
-
+    
+    # test
+    # rez = [] ###HIDE
+    
+    # suma = 0
+    # for x in [2, 7, 3]:
+        # suma += x
+        # print( suma )
+        # rez.append(suma) ###HIDE
+        
+    # return PRE('\n'.join(map(str, rez)) ) ###HIDE
+    # return suma ###HIDE
+    
 
 @tutor
 def zodynai():
@@ -172,3 +186,24 @@ def teksto_formatavimas_su_zodynais():
     
     return "%(name)s turi %(age)s metus. %(name)s kartais vėluoja..." % locals()
 
+
+
+@tutor
+def test_ala_CLI():  ###HIDE 
+    
+    money = 10
+    print(money)  ###PLACEHOLDER:--> ?
+    
+    return money   ###HIDE
+
+@tutor(imitateCLI=True)
+def test_imitateCLI():  
+    money = 10 ###PLACEHOLDER:-->  money= ?
+    return money 
+
+@tutor(imitateCLI=True)
+def test_imitateCLI_lastline():  
+    money = 10 
+    print( money) ###PLACEHOLDER:-->  (money)
+    return money ###HIDE
+    
