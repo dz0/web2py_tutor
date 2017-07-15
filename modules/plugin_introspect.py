@@ -382,10 +382,19 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
         # dedent by 4 spaces:
         code = re.sub(r"^    (.*)$", r"\1", code, flags=re.MULTILINE)
         
+        
+        if 'print' in code:
+            # hide last return (as it should flush outputs of print)
+            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', '', code, flags=re.MULTILINE )
+        else:
         # convert return to print (it should be on last line) # todo: maybe just hide it?
         # code = code.rstrip().replace( 'return', 'print(' ) + ' )'
-        code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
-
+        # if isinstance(imitateCLI, dict) and 'return' in imitateCLI:
+            # code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1'+imitateCLI['return']'+'(\3 )', code, flags=re.MULTILINE )
+            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
+        
+        
+        
     # code = re.sub(r"@show_menu", "", code) 
     # code = re.sub(r"@show_code", "", code) 
     
