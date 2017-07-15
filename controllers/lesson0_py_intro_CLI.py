@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Web2Py pagal puslapio URL iškviečia funkciją atitinkamame faile ("controller"'yje)."""
+""""""
 
 ######## fake print ##########
 from __future__ import print_function
@@ -15,7 +15,7 @@ def flush_print(sep="\n"):
     OUT = []
     return PRE(result, _style="color:black; border:none; background:none")
 
-def TEST_fake_print():        
+def __TEST_fake_print():        
     x = 2
     print(1)
     print('ad')
@@ -111,31 +111,44 @@ def duomenu_tipu_konvertavimas():
     return flush_print()
 
 @tutor(imitateCLI=True)
+def tekstas_plius_skaicius_klaida():
+    # Tiesiogiai sudėt  teksto ir skaičiaus nepavyks - bus klaida
+    
+    a = "labas"
+    b = 10
+    
+    c = a + b
+
+@tutor(imitateCLI=True)
+def tekstas_plius_skaicius():
+    
+    # Bet galima skaičių pirmiau paverst tekstu (žr užpraitą pvz ;)  
+    
+    a = "labas"
+    b = 10
+    
+    c = a + str(b)  ###PLACEHOLDER:--> c = a + ?  
+    return c
+
+
+    
+
+@tutor(imitateCLI=True)
 def datos_tipas():
     import datetime
-    
+
     jonines  = datetime.date(2017, 6, 23)
-    
-    return jonines
-
-@tutor(imitateCLI=True)
-def datos_tipas_siandien():
-    import datetime
+    print( jonines )
     
     siandien  = datetime.date.today()
+    print( siandien )
     
-    return siandien
-    
+    # datos aritmetika: kelinta dabar metų diena? 
+    metu_riba  = datetime.date(2016, 12, 31) 
+    skirtumas_dienomis = (siandien - metu_riba).days  
+    print( skirtumas_dienomis )
 
-@tutor(imitateCLI=True)
-def datos_skirtumas():
-    """raskite kelinta dabar metų diena"""
-    import datetime
-
-    NM_riba  = datetime.date(2016, 12, 31) # metų riba
-    siandien  = datetime.date.today()
-    
-    return (siandien - NM_riba).days  
+    return flush_print()
 
 
 @tutor(imitateCLI=True)
@@ -166,28 +179,6 @@ def multiline_tekstas():
     
     return PRE( bla ) ###REPLACE return bla
     
-@tutor(imitateCLI=True)
-def tekstas_plius_skaicius_klaida():
-    """Tiesiogiai sudėt 
-    teksto ir skaičiaus 
-    nepavyks - bus klaida
-    """
-    
-    a = "labas"
-    b = 10
-    
-    c = a + b
-
-@tutor(imitateCLI=True)
-def tekstas_plius_skaicius():
-    """Bet galima skaičių pirmiau paverst tekstu ;) 
-    """
-    
-    a = "labas"
-    b = 10
-    
-    c = a + str(b)
-    return c
     
 @tutor(imitateCLI=True)
 def _salygos_sakiniai():
