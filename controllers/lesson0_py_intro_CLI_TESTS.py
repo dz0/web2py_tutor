@@ -252,6 +252,7 @@ def _sarasai():
     
     print("Finansai", Finansai)  ###PLACEHOLDER:--> print(?, ?)
     
+    # susumuojam balansą
     balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai) 
     print("Dabar turim:", balansas ) 
 
@@ -260,7 +261,7 @@ def _sarasai():
 @tutor(imitateCLI=True)
 def vidurkis():
     
-    Pazymiai = [6, 8, 3, 10] 
+    Pazymiai = [6, 8, 4, 10] 
 
     suma = sum( Pazymiai )
     kiek = len( Pazymiai )  ###PLACEHOLDER:--> kiek = ?(Pazymiai) 
@@ -278,7 +279,7 @@ def perrinkimas_grafikas():
     for pazymys in Pazymiai: # imam po pažymį iš sąrašo 
         # nurodėm kintamojo pavadinimą "pazymys",
         # ir su juo atitraukę nuo krašto darom, ką norim 
-        print( pazymys, "#" * pazymys)
+        print( pazymys, "#" * pazymys) # spausdinam reikšmę ir tiek pat simbolių
 
     return flush_print()
             
