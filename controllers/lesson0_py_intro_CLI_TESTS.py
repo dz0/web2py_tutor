@@ -180,7 +180,23 @@ def multiline_tekstas():
         """
     
     return PRE( bla ) ###REPLACE print( bla )
-    
+
+@tutor(imitateCLI=True)
+def replace_():
+    zodis = "mintis"
+
+    zodis = zodis.replace('i', 'a') 
+    return zodis 
+
+@tutor(imitateCLI=True)
+def newline():
+
+    tekstas = "mano batai buvo 2"
+    po_zodi_eilutej = tekstas.replace(' ', '\n')  
+    # '\n' yra spec. simbolis -- reiškia naują eilutę
+
+    return po_zodi_eilutej
+     
     
 @tutor(imitateCLI=True)
 def _salygos_sakiniai():
@@ -226,5 +242,57 @@ def elif_else():
     else:  ###PLACEHOLDER:--> ?
         print( "I am running out of money.." ) 
         
+    return flush_print()
+
+
+@tutor(imitateCLI=True)
+def _sarasai():
+    
+    Finansai = [ 10, 12, 0, 20, 8, -25, -5 ]  # pajamos/išlaidos per savaitę
+    
+    print("Finansai", Finansai)  ###PLACEHOLDER:--> print(?, ?)
+    
+    balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai) 
+    print("Dabar turim:", balansas ) 
+
+    return flush_print()
+
+@tutor(imitateCLI=True)
+def vidurkis():
+    
+    Pazymiai = [6, 8, 3, 10] 
+
+    suma = sum( Pazymiai )
+    kiek = len( Pazymiai )  ###PLACEHOLDER:--> kiek = ?(Pazymiai) 
+    print("Vidurkis:", suma / kiek ) 
+
+    return flush_print()
+    
+@tutor(imitateCLI=True)
+def perrinkimas_grafikas():
+    
+    Pazymiai = [6, 9, 3, 7] 
+    
+    print( "Stulpelinė diagrama (horiz.):" )
+    
+    for pazymys in Pazymiai: # imam po pažymį iš sąrašo 
+        # nurodėm kintamojo pavadinimą "pazymys",
+        # ir su juo atitraukę nuo krašto darom, ką norim 
+        print( pazymys, "#" * pazymys)
+
+    return flush_print()
+            
+@tutor(imitateCLI=True)
+def filtravimas():
+    
+    Pazymiai = [6, 9, 3, 7] 
+    vidurkis = sum( Pazymiai )/ len( Pazymiai )  
+    
+    print( "Didesni už vidurkį" ) 
+    
+    for paz in Pazymiai:  ###PLACEHOLDER:--> ? paz in Pazymiai?
+        if paz > vidurkis:
+            print( paz ) ###PLACEHOLDER:--> print( ? ) 
+    
     return flush_print()
 
