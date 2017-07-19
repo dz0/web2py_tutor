@@ -20,21 +20,6 @@ def flush_print(sep="\n"):
     result = sep.join( OUT )
     OUT = []
     return PRE(result, _style="color:black; border:none; background:none")
-
-def decorate_flush_print(f):  # can't use it in combination with @tutor :/
-    def result():
-        f()  # call function with print calls
-        return flush_print()  # return what it printed
-    
-    return result
-    
-def __TEST_fake_print():        
-    x = 2
-    print(1)
-    print('ad')
-    print(x, 4, 'asdf')
-
-    real_print( flush_print(sep='\n') )
     
 ######## end fake print ##########
 
@@ -53,7 +38,7 @@ def sarasai():
     
     Finansai = [ 10, 12, 0, 20, 8, -25, -5 ]  # pajamos/išlaidos per savaitę
     
-    print("Finansai", Finansai)  ###PLACEHOLDER:--> print(?, ?)
+    print("Finansai", Finansai)  
     
     # susumuojam balansą
     balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai) 
@@ -67,7 +52,7 @@ def vidurkis():
     Pazymiai = [6, 8, 4, 10] 
 
     suma = sum( Pazymiai )
-    kiek = len( Pazymiai )  ###PLACEHOLDER:--> kiek = ?(Pazymiai) 
+    kiek = len( Pazymiai )  # asdf  ###PLACEHOLDER:--> kiek = ?(Pazymiai)  # hint: sąrašo ilgis
     print("Vidurkis:", suma / kiek ) 
 
     return flush_print()
@@ -85,6 +70,26 @@ def perrinkimas_grafikas():
         print( pazymys, "#" * pazymys) # spausdinam reikšmę ir tiek pat simbolių
 
     return flush_print()
+
+
+            
+@tutor(imitateCLI=True)
+def saraso_pertvarkymas():
+    money = [10, 2, 5]  # centai...
+    
+    money.append( 100 ) # gavom eurą!
+    print( money )
+    
+    money[1] = 30  # pakoreguojam antrąją reikšmę
+    print( money )
+    
+    del money[0]   # pašalinam pirmąją reikšmę
+    print( money )
+    
+    money.insert(0, 13) # į priekį įterpiam 13
+    print( money )
+    
+    return flush_print()
             
 @tutor(imitateCLI=True)
 def filtravimas_i_nauja_sarasa():
@@ -94,7 +99,7 @@ def filtravimas_i_nauja_sarasa():
     
     # Norim surašyt didesnius už vidurkį į atskirą sąrašą
      
-    didesni = [] ###PLACEHOLDER:--> paruošt (sukurt) sąrašą didesni
+    didesni = [] # paruošiam naują sąrašą ###PLACEHOLDER:-->  didesni = ? # paruošiam naują sąrašą
     
     for paz in Pazymiai:  ###PLACEHOLDER:--> for ? :
         if paz > riba: ###PLACEHOLDER:--> if 
@@ -102,3 +107,21 @@ def filtravimas_i_nauja_sarasa():
     
     return didesni
 
+
+@tutor(imitateCLI=True)
+def elementu_numeravimas():
+    pass
+    
+
+
+@tutor(imitateCLI=True)
+def lygiagretus_perrinkimas():
+    pass
+    
+
+
+    
+#####
+def _funkcijos():
+    pass
+    
