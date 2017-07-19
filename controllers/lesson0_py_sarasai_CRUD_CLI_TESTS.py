@@ -49,7 +49,7 @@ def index( ):
 
 
 @tutor(imitateCLI=True)
-def _sarasai():
+def sarasai():
     
     Finansai = [ 10, 12, 0, 20, 8, -25, -5 ]  # pajamos/išlaidos per savaitę
     
