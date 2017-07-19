@@ -130,15 +130,17 @@ def evaluate():
             if not ( 'wrong' in evaluations or 'initial' in evaluations ) :
                 return "<b>OK :)</b>"
 
+        return ""
         
           
-    return response.toolbar()
     # code = get_file_function_code( file, function )
     # return BEAUTIFY( session ) 
     return BEAUTIFY ( dict(
             # vars= map(repr, request.vars.items() ) , 
             placeholders = placeholders,
-            answers= session.answers        
+            answers= session.answers,
+            msg = "Sth is wrong with session.answers or session.initial_codes",
+            initial_codes = session.initial_codes,
                 ) )
     
 
