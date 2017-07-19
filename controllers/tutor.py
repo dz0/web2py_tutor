@@ -62,8 +62,17 @@ def evaluate():
 
             else:
                 LEVEL = session.MISTAKE_LEVEL or 2 
+                def strip_comments( codeline ):
+                    k = codeline.rfind("#")
+                    if k == -1:
+                        return codeline
+                    else:
+                        return codeline[:k] # todo -- maybe better via AST roundtrip?
+                    
+                ph = strip_comments( ph )
+                answer = strip_comments( answer )
                 
-                problems = placeholder_smart_compare( ph, expected=answer, limit_hints=100, human_nr=nr+1 ) # it gives hints about problems
+                problems = placeholder_smart_compare( ph, expected=answer, limit_hints=5, human_nr=nr+1 ) # it gives hints about problems
                 # hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs)
 
                 if problems:
