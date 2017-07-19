@@ -110,12 +110,14 @@ def evaluate():
             js_hints_result.append(js_tpl_hints % locals())
 
 
+        def wrap_js_settimeout( code, time_ms=100 ):
+            return "setTimeout( function(){%s;}, %s); \n" %(code, time_ms)
         if evaluations.count('ok') == len(evaluations):
-            js_hints_result.append( "alert('%s'); \n" % "Puiku, gali judėti pirmyn!")
+            js_hints_result.append(wrap_js_settimeout( "alert('%s'); \n" % "Puiku, gali judėti pirmyn!"))
 
         elif 'initial' in evaluations and not 'wrong' in evaluations:
         # if evaluations.count('initial') == len(evaluations):
-            js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)")
+            js_hints_result.append(wrap_js_settimeout( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)"))
 
         def save_student_progress():
             # prepair session
