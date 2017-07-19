@@ -61,12 +61,29 @@ def evaluate():
                 hints = u"kazką reik pakeist.."
 
             else:
-                problems = placeholder_smart_compare( ph, expected=answer, human_nr=nr+1 ) # it gives hints about problems
+                LEVEL = session.MISTAKE_LEVEL or 2 
+                
+                problems = placeholder_smart_compare( ph, expected=answer, limit_hints=100, human_nr=nr+1 ) # it gives hints about problems
+                # hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs)
 
                 if problems:
+                    msgs = problems
+                    msgs_unnecessary = []
+                    msgs_expected = []
+                    
+                    if "" in msgs:  # msgs format is: first list of msgs about unnecessary, then empty line, then expected fragments
+                        separator = msgs.index("")
+                        msgs_unnecessary = msgs[:separator]
+                        msgs_expected = msgs[separator+1:]
+                    
+                    
+                    
+                    msgs = msgs_unnecessary[:LEVEL] + [""] + msgs_expected[:max(0, LEVEL-2)]
+                        
                     state = 'wrong'
-                    hints = problems.strip()
-                    hints_result += "<br/>  <li>Laukelis nr. %s: <br> %s </li><br />"%(nr+1,  hints)
+                    hints = '<br />'.join( msgs ).strip()
+                                        
+                    hints_result += "<br/>  <li>Laukelis nr. %s: <br> %s </li><br />"%(nr+1,  hints) # Deprecated?
 
 
                 else: #  ph == answer   might be picky about spacing...
@@ -91,7 +108,11 @@ def evaluate():
         # if evaluations.count('initial') == len(evaluations):
             js_hints_result.append( "alert('%s'); \n" % "Reik kažką pakeisti geltonose eilutėse... ;)")
 
-        def apply_db():
+        def save_student_progress():
+            # prepair session
+            session.setdefault('MISTAKE_LEVEL', 2)  
+            
+            # store to DB
             if auth.is_logged_in():
                 query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
                 print "\ndb.learn.responses==placeholders"
@@ -109,11 +130,19 @@ def evaluate():
                     # tries_count= ,
                     mark=int(100*evaluations.count('ok')/len(evaluations))
                 )
-                db(db.learn.task_key==task_key).update(tries_count=db.learn.tries_count + 1)
+                db( query_unique_task_user ).update(tries_count=db.learn.tries_count + 1)
                 # rec.update_record( tries_count= rec.tries_count+1 )
+                
+                tries_count = db( query_unique_task_user ).select( db.learn.tries_count ).first().tries_count
+                session.MISTAKE_LEVEL = int(tries_count)  
 
+            else:
+                session.MISTAKE_LEVEL += 1 
+            
+            
+            
         if request.vars.mark_placeholders: # ajax
-            apply_db()
+            save_student_progress()
             return ''.join( js_highlight_result +["\n"]+ js_hints_result )
 
 

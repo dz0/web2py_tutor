@@ -174,7 +174,7 @@ def hints_by_token_comparison(input, expected , limit_hints=2, **tokens_kwargs):
 def code_highlight(txt):
     return "<span style='color:blue; font-family: monospace;'>%s</span>" % txt
 
-def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[]):
+def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[], return_what='all' or 'unnecessary' or 'required'):
 
     msgs = []
 
@@ -202,8 +202,10 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
         # msgs .append( "some " +code_highlight(item) + " is not exactly needed" )
         msgs .append( msg % code_highlight(item)  )
 
+    msgs_unnecessary = msgs[:] # TODO use..
+    
     if unnecessary:
-        msgs.append("")
+        msgs.append("")  # separator 
 
     for item in required:
         msg = "Tikimasi daugiau %s"
@@ -218,13 +220,22 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[])
 
         # msgs .append(  code_highlight(item) + " is expected "  )
         msgs .append( msg % code_highlight(item)  )
-
-    return msgs
-
+    
+    msgs_required = msgs[len(msgs_unnecessary)+ (1*bool(len(msgs_unnecessary)))  :] # +1 for separator
+    
+    if return_what == 'all':
+        return msgs
+    
+    if return_what == 'unnecessary':
+        return msgs_unnecessary
+    
+    if return_what == 'required':
+        return msgs_required
+    
 
 def placeholder_smart_compare(placeholder, expected, human_nr=None, **hints_kwargs ):
     """Compares placeholder code with expected by tokens -- so spacing in expressions is ignored.
-    Can have extra lists of `required` and `unnecessary` lists of strings"""
+    Can have extra lists of `required`/missing/expected and `unnecessary` strings"""
     tokens_kwargs = {} # possible use -- best would be to filter them from  **kwargs
     a_tokens = get_tokens(placeholder, **tokens_kwargs)
     b_tokens = get_tokens(expected, **tokens_kwargs)
@@ -233,13 +244,15 @@ def placeholder_smart_compare(placeholder, expected, human_nr=None, **hints_kwar
     if a_tokens  == b_tokens:
         # failed( "DBG: "+"<br>"+str(a_tokens)+"<br>"+str(b_tokens) )
         passed()
+        return
 
     else:
         msgs = hints_by_token_comparison(placeholder, expected, **hints_kwargs)
         # if human_nr:
             # msgs.insert(0, "Placeholder nr. %s:" %(human_nr))
         failed( '<br />'.join(msgs) )
-        return '<br />'.join(msgs) 
+        # return '<br />'.join(msgs) 
+        return  msgs # for web2py_tutor. Or we could call directly:  hints_by_token_comparison
 
 
 
