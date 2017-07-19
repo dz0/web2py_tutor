@@ -2,19 +2,32 @@
 """"""
 
 ######## fake print ##########
-from __future__ import print_function
-real_print = print
-OUT = []
+from __future__ import print_function  # if print is function, we can override it
+real_print = print   # save original function to different name
+
+OUT = []  # global buffer , dirty hack
+
 def print(*args, **kwargs):
-    real_print( *args, **kwargs )
-    OUT.append( ' '.join(map(str, args) ) )
+    real_print( *args, **kwargs )  # call original
+    OUT.append( ' '.join(map(str, args) ) )   # save to buffer
 
 def flush_print(sep="\n"):
+    """Flushes the OUT buffer and returns concatenated lines
+    
+    sep - newline separator"""
+    
     global OUT
     result = sep.join( OUT )
     OUT = []
     return PRE(result, _style="color:black; border:none; background:none")
 
+def decorate_flush_print(f):  # can't use it in combination with @tutor :/
+    def result():
+        f()  # call function with print calls
+        return flush_print()  # return what it printed
+    
+    return result
+    
 def __TEST_fake_print():        
     x = 2
     print(1)
@@ -188,6 +201,7 @@ def replace_():
     zodis = zodis.replace('i', 'a') 
     return zodis 
 
+
 @tutor(imitateCLI=True)
 def newline():
 
@@ -195,7 +209,10 @@ def newline():
     po_zodi_eilutej = tekstas.replace(' ', '\n')  
     # '\n' yra spec. simbolis -- reiškia naują eilutę
 
-    return po_zodi_eilutej
+    print( po_zodi_eilutej )
+    
+    return flush_print()
+    
      
     
 @tutor(imitateCLI=True)
