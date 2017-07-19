@@ -86,6 +86,7 @@ from gluon.tools import Auth, Service, PluginManager
 # host names must be a list of allowed host names (glob syntax allowed)
 auth = Auth(db, host_names=myconf.get('host.names'))
 
+"""
 from gluon.contrib.login_methods.rpx_account import RPXAccount
 auth.settings.actions_disabled=['register','change_password','request_reset_password']
 auth.settings.login_form = RPXAccount(request,
@@ -93,14 +94,16 @@ auth.settings.login_form = RPXAccount(request,
     domain='jurgisvcs-pythonanywhere',
     url = "http://jurgisvcs.pythonanywhere.com/%s/default/user/login" % request.application)
 
+
 auth.settings.login_form.mappings.Facebook = lambda profile:      dict(
                              registration_id = profile["identifier"],
-                             username = profile["preferredUsername"],
-                             email = profile["email"],
-                             first_name = profile["name"]["givenName"],
-                             last_name = profile["name"]["familyName"]
+                             username = profile["email"].split('@')[0],
+                             email = profile["email"]
+                             #,first_name = profile["name"]["givenName"]
+                             #,last_name = profile["name"]["familyName"]
                          )
-                 
+"""
+
 service = Service()
 plugins = PluginManager()
 # auth.define_tables() ??
@@ -163,4 +166,3 @@ for field in ['responses', 'evaluations']:
 # after defining tables, uncomment below to enable auditing
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
-

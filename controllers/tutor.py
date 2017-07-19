@@ -6,6 +6,7 @@ def placeholders_fill_in_last_response():
     """should be called via ajax (similar to evaluate) """
     task_key = request.vars.task_key
 
+
     if auth.is_logged_in():
         rows = db(db.learn.task_key == task_key, db.learn.user_id==auth.user_id).select()
         if len(rows) > 1:
@@ -24,7 +25,12 @@ def placeholders_fill_in_last_response():
                 js_result_highlight.append( js_tpl_highlight % locals() )
 
             return ''.join(js_result_fillin+['\n']+js_result_highlight)
-
+    
+    return ""
+    
+def reset():
+    session.renew()
+    
 def evaluate():
     
     # return dict(a="bla", vars= request.vars)
@@ -124,9 +130,9 @@ def evaluate():
             if not ( 'wrong' in evaluations or 'initial' in evaluations ) :
                 return "<b>OK :)</b>"
 
-        return ""
-          
         
+          
+    return response.toolbar()
     # code = get_file_function_code( file, function )
     # return BEAUTIFY( session ) 
     return BEAUTIFY ( dict(
