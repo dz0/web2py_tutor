@@ -25,13 +25,28 @@ def flush_print(sep="\n"):
 
 
 
-from plugin_introspect import tutor, menu
+from plugin_introspect import tutor as original_tutor, menu
+from tools import call_or_redirect
+import urllib
+
+
+# tutor = auth.requires_login(original_tutor)
+def tutor (*args, **kwargs):
+    if auth.is_logged_in():
+        return original_tutor(*args, **kwargs)
+    else:
+        next = auth.here()
+        session.flash = response.flash
+        return call_or_redirect(auth.settings.on_failed_authentication,
+                                auth.settings.login_url + '?_next=' + urllib.quote(next))
+
 
 def index( ):
     response.view = 'default/index.html'
     response.title = "Temos"
     return dict(content=menu())
 
+########### tasks
 
 @tutor(imitateCLI=True)
 def sarasai():
@@ -97,13 +112,13 @@ def filtravimas_i_nauja_sarasa():
     Pazymiai = [6, 9, 3, 7] 
     riba = 5
     
-    # Norim surašyt didesnius už vidurkį į atskirą sąrašą
+    # Norim surašyt didesnius už ribą į atskirą sąrašą
      
     didesni = [] # paruošiam naują sąrašą ###PLACEHOLDER:-->  didesni = ? # paruošiam naują sąrašą
     
-    for paz in Pazymiai:  ###PLACEHOLDER:--> for ? :
+    for paz in Pazymiai:  ###PLACEHOLDER:--> for paz? :
         if paz > riba: ###PLACEHOLDER:--> if 
-            didesni.append( paz ) ###PLACEHOLDER:--> papildom sąrašą
+            didesni.append( paz ) ###PLACEHOLDER:--> papildom sarasa
     
     return didesni
 
@@ -119,7 +134,9 @@ def lygiagretus_perrinkimas():
     pass
     
 
+""
 
+# https://docs.google.com/document/d/15bBFcodY6f6aZ6D2Dco94fwbo2OBeZKPS-8gq7CsPAs/edit
     
 #####
 def _funkcijos():
