@@ -346,6 +346,9 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
     session.setdefault( 'answers', {} )
     session.answers[ task_key ]  = [p['expected'] for p in t['placeholders'] ]
 
+    session.setdefault( 'full_codes', {} )
+    session.full_codes[ task_key ] = code
+    
     session.setdefault( 'initial_codes', {} )
     session.initial_codes[ task_key ]  = [p['given'] for p in t['placeholders'] ]
 
@@ -400,7 +403,9 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE)
     code = re.sub(r"^(\s*).*?###REPLACE:?\s*?(.*?)$", r"\1\2", code, flags=re.MULTILINE)
 
-    if imitateCLI:
+    current.session.imitateCLI = imitateCLI  # TODO: refactor to be saved per each task (now one instance is for all, and if the task is switched in other tab without reloading, migt be problems)..
+    
+    if imitateCLI: 
         # hide def
         code = re.sub(r"^def.*$", "", code, flags=re.MULTILINE)
         code = code.lstrip()

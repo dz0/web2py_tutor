@@ -4,10 +4,12 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from test_helper_4automation import *
-
+from plugin_introspect import get_active_code
 
 def placeholders_fill_in_last_response():
-    """should be called via ajax (similar to evaluate) """
+    """Fills in placeholders with previous entries (if such available)
+    
+    should be called via ajax (similar to evaluate) """
     task_key = request.vars.task_key
 
 
@@ -45,6 +47,7 @@ def evaluate():
 
     answers= session.answers
     initial_codes= session.initial_codes
+    # full_codes= session.full_codes
 
     if task_key and answers and answers.get(task_key):
         # #take placeholders and answers for current task
@@ -119,10 +122,55 @@ def evaluate():
             js_hints_result.append(js_tpl_hints % locals())
         hints_result += "<br/>\nLEVEL" + str(LEVEL)
 
+        
+        def get_full_current_code(): # needs task_key
+             # code =  get_active_code(f=None, code=None, decorate=False, imitateCLI=session.imitateCLI)
+             code =  session.full_codes[task_key] 
+             
+             if placeholders:
+                phnr = 0
+                result = []
+                for line in code.split('\n'):
+                    if '###PLACEHOLDER' in line:
+                        line = placeholders[phnr]
+                        phnr += 1
+                    result.append( line )
+                # print "full_current_code\n" , '\n'.join(result)
+                return '\n'.join(result)
+            
+             else:
+                return code
+
+        def check_syntax_indentation():
+            # Thoroughly, can be checked by comparing AST trees (initial with current)
+            # or at least by trying to compile
+
+            code = get_full_current_code()
+            # print "code", code
+            compile(code, '<string>', 'exec')
+            return True
+
         def wrap_js_settimeout( code, time_ms=100 ):
             return "setTimeout( function(){%s;}, %s); \n" %(code, time_ms)
-        if evaluations.count('ok') == len(evaluations):
-            js_hints_result.append(wrap_js_settimeout( "alert('%s'); \n" % "Puiku, gali judėti pirmyn!"))
+        
+        completed_ratio= int(100*evaluations.count('ok')/len(evaluations))
+        
+        if evaluations.count('ok') == len(evaluations):  # completed_ratio == 100        
+            # though separate placeholders might be OK, total indentation might be not..
+            try:
+                check_syntax_indentation()
+                js_hints_result.append(wrap_js_settimeout( "alert('%s'); \n" % "Puiku, gali judėti pirmyn!"))
+            except SyntaxError as e:
+                # print e
+                completed_ratio = 99
+                def fmt_more_understandable(e):
+                    err, etc = str(e).split('(<string>, line ')
+                    lineno = int(etc[:-1])
+                    line = get_full_current_code().split('\n')[lineno-1]
+                    
+                    return "SyntaxError:\\n%s (line %s)\\n%s" %( err, lineno, line)
+                    
+                js_hints_result.append(wrap_js_settimeout( "alert('%s\\n\\n%s'); \n" % ("Netvarkingas lygiavimas..", fmt_more_understandable(e) )) )
 
         elif 'initial' in evaluations and not 'wrong' in evaluations:
         # if evaluations.count('initial') == len(evaluations):
@@ -148,7 +196,7 @@ def evaluate():
                     responses=placeholders,
                     evaluations=evaluations,
                     # tries_count= ,
-                    mark=int(100*evaluations.count('ok')/len(evaluations))
+                    mark=completed_ratio # int(100*evaluations.count('ok')/len(evaluations))
                 )
                 db( query_unique_task_user ).update(tries_count=db.learn.tries_count + 1)
                 # rec.update_record( tries_count= rec.tries_count+1 )
