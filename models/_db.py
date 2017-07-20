@@ -159,11 +159,11 @@ db.define_table('learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('tries_count', 'integer', default=0),
                 )
 
+"""
 from simplejson import loads, dumps 
 for field in ['responses', 'evaluations']:  # todo - maybe not needed?
     db.learn[field].filter_in = lambda obj, dumps=dumps: dumps(obj)
     db.learn[field].filter_out = lambda txt, loads=loads: loads(txt)
-"""
 """
 
 # -------------------------------------------------------------------------
