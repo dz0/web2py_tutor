@@ -86,6 +86,7 @@ from gluon.tools import Auth, Service, PluginManager
 # host names must be a list of allowed host names (glob syntax allowed)
 auth = Auth(db, host_names=myconf.get('host.names'))
 
+
 """
 from gluon.contrib.login_methods.rpx_account import RPXAccount
 auth.settings.actions_disabled=['register','change_password','request_reset_password']
@@ -148,7 +149,7 @@ auth.settings.login_after_registration = True
 # >>> for row in rows: print row.id, row.myfield
 # -------------------------------------------------------------------------
 
-db.define_table('learn',
+db.define_table('learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None ),
                     # Field('user_id', "integer", default= auth_user.id if ),
                     Field('task_key', 'string'),
@@ -158,11 +159,18 @@ db.define_table('learn',
                     Field('tries_count', 'integer', default=0),
                 )
 
-from simplejson import loads, dumps
-for field in ['responses', 'evaluations']:
+from simplejson import loads, dumps 
+for field in ['responses', 'evaluations']:  # todo - maybe not needed?
     db.learn[field].filter_in = lambda obj, dumps=dumps: dumps(obj)
     db.learn[field].filter_out = lambda txt, loads=loads: loads(txt)
+"""
+"""
+
 # -------------------------------------------------------------------------
 # after defining tables, uncomment below to enable auditing
 # -------------------------------------------------------------------------
 # auth.enable_record_versioning(db)
+
+from gluon import current
+current.db = db
+current.auth = auth

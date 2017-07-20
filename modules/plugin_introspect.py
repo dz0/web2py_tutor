@@ -103,6 +103,32 @@ def exposed_functions_names(controller=None):
     return items
 
 
+def task_marker(item):
+    """marks tasks in menu
+    
+    if user has done the task wil mark with "+"
+    if user has tried, but not finished "-" (or percent of completion)
+    
+    if not tried (or not logged in) "*"
+    """
+    auth = current.auth
+    db = current.db
+    
+    if auth.is_logged_in(): 
+        task_key = current.request.controller + "/" + item
+        q = query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
+        task_info = db( q ).select().first()
+        if task_info:
+            if task_info.mark == 100:
+                # return "+"
+                return SPAN("+", _class="task-marker done", _style="color:green; vertical-align: super; ")
+            else:
+                # return "-"
+                return SPAN("(%s%%)" % task_info.mark, _class="task-marker unfinished", _style="color:red; vertical-align: super; font-size:0.6em;")
+        return SPAN("*", _class="task-marker not-started", _style="color:red; vertical-align: super; ")
+    
+    return "*"
+    # exposed_functions[item]
 
 def menu(only_category = False, item_decorator=None, cat_decorator=None, plain_menu=False):
     """gives list with links to all exposed functions except currently used
@@ -115,7 +141,7 @@ def menu(only_category = False, item_decorator=None, cat_decorator=None, plain_m
     request = current.request
 
     if item_decorator is None:
-        item_decorator = lambda item: item if item == request.function    else SPAN(A(item, _href=URL(item)), "*" * exposed_functions[item]['is_task'])
+        item_decorator = lambda item: item if item == request.function    else SPAN(A(item, _href=URL(item)), task_marker(item) * exposed_functions[item]['is_task'] )
 
     if cat_decorator is None:
         cat_decorator = lambda cat_name, items: TOGGLABLE_CONTENT( cat_name, UL(items))
