@@ -36,7 +36,7 @@ def my_tokenizer( code ):
     return rez2
 
 def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
-
+    """splits (fragment of) code string to tokens """
     # OPTION 1 - tokenizer
     # try:
     #     # g = tokenize(BytesIO(code.encode('utf-8')).readline)  # tokenize the string
@@ -195,10 +195,16 @@ def messages_by_fragments(placeholder, result=None, unnecessary=[], required=[],
     for item in unnecessary:
         msg = u"%s kaip ir nereikalingas"
         if item in result:
-            if result.count(item) == 1:
-                msg = u"prie %s kažko trūksta"
-            else:
+            print "result", result
+            print "item", item
+ 
+                
+            # jeigu įvesta daugiau tokių, negu turi būt rezultate
+            if get_tokens(placeholder).count(item) > get_tokens(result).count(item):  
                 msg = u"kažkuris %s nereikalingas"
+            else:
+                msg = u"prie %s kažko trūksta"
+                
         # msgs .append( "some " +code_highlight(item) + " is not exactly needed" )
         msgs .append( msg % code_highlight(item)  )
 

@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 from test_helper_4automation import *
 
 
@@ -85,14 +89,19 @@ def evaluate():
                         msgs_unnecessary = msgs[:separator]
                         msgs_expected = msgs[separator+1:]
                     
+                        # truncate hints about "unnecesary" to LEVEL, and "expected" to LEVEL-2
+                        msgs = msgs_unnecessary[:LEVEL] + [""] + msgs_expected[:max(0, LEVEL-2)]
                     
+                    else:
+                        msgs = msgs[:LEVEL]
                     
-                    msgs = msgs_unnecessary[:LEVEL] + [""] + msgs_expected[:max(0, LEVEL-2)]
-                        
                     state = 'wrong'
                     hints = '<br />'.join( msgs ).strip()
                                         
-                    hints_result += "<br/>  <li>Laukelis nr. %s: <br> %s </li><br />"%(nr+1,  hints) # Deprecated?
+                    # print hints
+                    hints_result += "<br/>  <li>Laukelis nr. %s: <br> %s </li><br />"%(nr+1,  hints) # for DEBUG
+                    # hints_result += "<br/>" +repr(problems)
+                    
 
 
                 else: #  ph == answer   might be picky about spacing...
@@ -108,7 +117,7 @@ def evaluate():
 
             js_highlight_result.append( js_tpl_highlight % locals() )
             js_hints_result.append(js_tpl_hints % locals())
-
+        hints_result += "<br/>\nLEVEL" + str(LEVEL)
 
         def wrap_js_settimeout( code, time_ms=100 ):
             return "setTimeout( function(){%s;}, %s); \n" %(code, time_ms)
@@ -126,9 +135,9 @@ def evaluate():
             # store to DB
             if auth.is_logged_in():
                 query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
-                print "\ndb.learn.responses==placeholders"
-                print db.learn.responses
-                print placeholders
+                # print "\ndb.learn.responses==placeholders"
+                # print db.learn.responses
+                # print placeholders
                 rows_same = db( query_unique_task_user & (db.learn.responses==placeholders) ).select()
                 if len(rows_same):  # if we didn't change placeholders since last time
                     return
@@ -159,6 +168,12 @@ def evaluate():
 
 
         DBG = False
+        
+        # if localhost
+        if request.env.http_host.split(':')[0] in ['localhost', '127.0.0.1']:
+            DBG = True
+            
+
         if DBG:
             # deprecated nonajax -- for debug purposes..
             if 'wrong' in evaluations:
