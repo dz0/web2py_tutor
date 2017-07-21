@@ -13,14 +13,14 @@ def print(*args, **kwargs):
 
 def flush_print(sep="\n"):
     """Flushes the OUT buffer and returns concatenated lines
-    
+
     sep - newline separator"""
-    
+
     global OUT
     result = sep.join( OUT )
     OUT = []
     return PRE(result, _style="color:black; border:none; background:none")
-    
+
 ######## end fake print ##########
 
 
@@ -50,95 +50,140 @@ def index( ):
 
 @tutor(imitateCLI=True)
 def sarasai():
-    
+
     Finansai = [ 10, 12, 0, 20, 8, -25, -5 ]  # pajamos/išlaidos per savaitę
-    
-    print("Finansai", Finansai)  
-    
+
+    print("Finansai", Finansai)
+
     # susumuojam balansą
-    balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai) 
-    print("Dabar turim:", balansas ) 
+    balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai)
+    print("Dabar turim:", balansas )
 
     return flush_print()
 
 @tutor(imitateCLI=True)
 def vidurkis():
-    
-    Pazymiai = [6, 8, 4, 10] 
+
+    Pazymiai = [6, 8, 4, 10]
 
     suma = sum( Pazymiai )
     kiek = len( Pazymiai )  # asdf  ###PLACEHOLDER:--> kiek = ?(Pazymiai)  # hint: sąrašo ilgis
-    print("Vidurkis:", suma / kiek ) 
+    print("Vidurkis:", suma / kiek )
 
     return flush_print()
-    
+
 @tutor(imitateCLI=True)
 def perrinkimas_grafikas():
-    
-    Pazymiai = [6, 9, 3, 7] 
-    
+
+    Pazymiai = [6, 9, 3, 7]
+
     print( "Stulpelinė diagrama (horiz.):" )
-    
-    for pazymys in Pazymiai: # imam po pažymį iš sąrašo 
+
+    for pazymys in Pazymiai: # imam po pažymį iš sąrašo
         # nurodėm kintamojo pavadinimą "pazymys",
-        # ir su juo atitraukę nuo krašto darom, ką norim 
+        # ir su juo atitraukę nuo krašto darom, ką norim
         print( pazymys, "#" * pazymys) # spausdinam reikšmę ir tiek pat simbolių
 
     return flush_print()
 
 
-            
+
 @tutor(imitateCLI=True)
 def saraso_pertvarkymas():
     money = [10, 2, 5]  # centai...
-    
+
     money.append( 100 ) # gavom eurą!
     print( money )
-    
+
     money[1] = 30  # pakoreguojam antrąją reikšmę
     print( money )
-    
+
     del money[0]   # pašalinam pirmąją reikšmę
     print( money )
-    
+
     money.insert(0, 13) # į priekį įterpiam 13
     print( money )
-    
+
     return flush_print()
-            
+
 @tutor(imitateCLI=True)
 def filtravimas_i_nauja_sarasa():
-    
-    Pazymiai = [6, 9, 3, 7] 
+
+    Pazymiai = [6, 9, 3, 7]
     riba = 5
-    
+
     # Norim surašyt didesnius už ribą į atskirą sąrašą
-     
+
     didesni = [] # paruošiam naują sąrašą ###PLACEHOLDER:-->  didesni = ? # paruošiam naują sąrašą
-    
+
     for paz in Pazymiai:  ###PLACEHOLDER:--> for paz? :
-        if paz > riba: ###PLACEHOLDER:--> if 
+        if paz > riba: ###PLACEHOLDER:--> if
             didesni.append( paz ) ###PLACEHOLDER:--> papildom sarasa
-    
+
     return didesni
 
 
 @tutor(imitateCLI=True)
 def elementu_numeravimas():
-    pass
-    
+    vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
+
+    print( vardai [0] ) ###PLACEHOLDER:--> print( vardai [?] )
+
+    vardai[2] = "Tomas" ###PLACEHOLDER:--> vardai[?] = "Tomas"
+    print( vardai )
+
+    vardai.append( vardai[0] )  ###PLACEHOLDER:--> vardai.append( vardai[?] )
+
+    del vardai[3] ###PLACEHOLDER:--> del vardai[?]
+    print( vardai)
+
+    return flush_print()
 
 
 @tutor(imitateCLI=True)
-def lygiagretus_perrinkimas():
-    pass
-    
+def elementu_numeravimas_klaida():
+    vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
+    print( vardai [4] )
 
+    return flush_print()
+
+@tutor(imitateCLI=True)
+def lygiagretus_perrinkimas():
+    vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
+    pinigai = [1000, 2000, 500, 8000]
+
+    # atspausdinkim vardus tų, kas turi daugiau negu 1000 pinigų
+    for v, p in zip(vardai, pinigai): ###PLACEHOLDER:--> for v, ? in ?(vardai, pinigai):
+        if p > 1000:
+            print( v )  ###PLACEHOLDER:--> ?
+
+    return flush_print()
 ""
 
 # https://docs.google.com/document/d/15bBFcodY6f6aZ6D2Dco94fwbo2OBeZKPS-8gq7CsPAs/edit
-    
+
 #####
+
+@tutor(imitateCLI=True)
 def _funkcijos():
-    pass
-    
+
+
+    def pasveikink(vardas):
+        print( "Hi, " + vardas )
+
+    pasveikink( "Joe" )
+    pasveikink( "Antanas" )
+
+    return flush_print()
+
+@tutor(imitateCLI=True)
+def grazinama_reiksme():
+    def add(a, b):
+        result = a+b
+        return result
+
+    print( add( 4, 6 ) )
+    print( add( 4, -6 ) )
+    print( add( "labas", " rytas" ) )
+
+    return flush_print()
