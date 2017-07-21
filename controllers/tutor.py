@@ -6,6 +6,9 @@ sys.setdefaultencoding('utf-8')
 from test_helper_4automation import *
 from plugin_introspect import get_active_code
 
+def task_query(task_key):
+    return (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
+
 def placeholders_fill_in_last_response():
     """Fills in placeholders with previous entries (if such available)
     
@@ -14,7 +17,7 @@ def placeholders_fill_in_last_response():
 
 
     if auth.is_logged_in():
-        rows = db(db.learn.task_key == task_key, db.learn.user_id==auth.user_id).select()
+        rows = db(task_query(task_key)).select()
         if len(rows) > 1:
             raise RuntimeError("DB error: learn table has too many (%s) entries with task_key=%s, user_id=%s " % (len(rows), task_key, auth.user_id))
 
@@ -182,11 +185,10 @@ def evaluate():
             
             # store to DB
             if auth.is_logged_in():
-                query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
                 # print "\ndb.learn.responses==placeholders"
                 # print db.learn.responses
                 # print placeholders
-                rows_same = db( query_unique_task_user & (db.learn.responses==placeholders) ).select()
+                rows_same = db( task_query(task_key) & (db.learn.responses==placeholders) ).select()
                 if len(rows_same):  # if we didn't change placeholders since last time
                     return
 
