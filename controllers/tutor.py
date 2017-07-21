@@ -37,6 +37,35 @@ def placeholders_fill_in_last_response():
     
     return ""
     
+# def update_task_lesson_info():
+
+@auth.requires_login()
+def teacher_dashboard():
+    if auth.user_id != 1:
+        return "Needs Teacher rights"
+    # from plugin_joins_builder import build_joins
+    from plugin_introspect import lessons_menu
+    lessons = lessons_menu(return_plain=True)
+    form = SQLFORM.factory( Field('lesson', requires=IS_IN_SET(lessons) ) )
+    form.process(keepvalues=True)
+    
+    query = None
+    if request.vars.lesson:
+        # query = db.learn.lesson == request.vars.lesson 
+        query = db.learn.task_key.startswith( request.vars.lesson + '/') 
+    
+    rows = db( query ).select(
+        db.auth_user.first_name, db.learn.task_key, db.learn.mark, db.learn.tries_count,
+        orderby = db.auth_user.id|db.learn.task_key, # todo: order by def order in files
+        join = [ db.learn.on(db.learn.user_id==db.auth_user.id) ]
+    )
+    
+    for r in rows:
+        r.learn.task_key= r.learn.task_key.split('/')[1] #[-15:]
+    # return dict( content=SQLTABLE(rows, headers={'learn.task_key': {'truncate':100}} ) )
+    return dict( content=CAT(form, rows) )
+    
+    
 def reset():
     session.renew()
     
