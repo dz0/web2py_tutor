@@ -185,10 +185,11 @@ def evaluate():
             
             # store to DB
             if auth.is_logged_in():
+                query_unique_task_user = task_query(task_key) 
                 # print "\ndb.learn.responses==placeholders"
                 # print db.learn.responses
                 # print placeholders
-                rows_same = db( task_query(task_key) & (db.learn.responses==placeholders) ).select()
+                rows_same = db( query_unique_task_user & (db.learn.responses==placeholders) ).select()
                 if len(rows_same):  # if we didn't change placeholders since last time
                     return
 
