@@ -71,22 +71,21 @@ def get_exposed_function_code(fun_name, code=None):
     return "\n".join(result)
 
 
-def lessons_menu(return_plain=False):
     
+def lessons_menu(return_plain=False):
     request = current.request
     
     app = request.application
     c = request.controller
     dirpath = apath('%s/controllers' % app, r=request)    
     
-    controllers  = [ c[:-len('.py')]   for c in os.listdir( dirpath )      if c.startswith('lesson') and c.endswith('.py')]
-    controllers.sort()
-    
-    menu = [  A(  c[len("lesson"):].title(),     _href=URL(c, 'index') )     for c in controllers   ]
+    lessons  = [ c[:-len('.py')]   for c in os.listdir( dirpath )      if c.startswith('lesson') and c.endswith('.py')]
+    lessons.sort()
     
     if return_plain:
-        return controllers
+        return lessons
     else:
+        menu = [  A(  lesson[len("lesson"):].title(),  _href=URL(lesson, 'index') )     for lesson in lessons   ]
         return UL(menu)
         
 def exposed_functions_names(controller=None):
