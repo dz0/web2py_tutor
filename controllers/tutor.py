@@ -64,6 +64,7 @@ def teacher_dashboard():
         r.learn.task_key= r.learn.task_key.split('/')[1] #[-15:]
     # return dict( content=SQLTABLE(rows, headers={'learn.task_key': {'truncate':100}} ) )
     return dict( content=CAT(form, rows) )
+    # todo: use pivottable , ex https://github.com/espern/pivottable
     
     
 def reset():
