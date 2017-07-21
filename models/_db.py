@@ -152,6 +152,8 @@ auth.settings.login_after_registration = True
 db.define_table('learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None ),
                     # Field('user_id', "integer", default= auth_user.id if ),
+                    Field('lesson', 'string'),
+                    Field('task', 'string'),
                     Field('task_key', 'string'),
                     Field('responses', 'json'),  # what was entered into placeholders
                     Field('evaluations', 'json'),
