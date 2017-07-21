@@ -16,7 +16,7 @@ def placeholders_fill_in_last_response():
     if auth.is_logged_in():
         rows = db(db.learn.task_key == task_key, db.learn.user_id==auth.user_id).select()
         if len(rows) > 1:
-            raise "DB error: learn table has too many (%s) entries with task_key=%s, user_id=%s " % (len(rows), task_key, auth.user_id)
+            raise RuntimeError("DB error: learn table has too many (%s) entries with task_key=%s, user_id=%s " % (len(rows), task_key, auth.user_id))
 
         if len(rows) == 1:
             responses = rows.first().responses
