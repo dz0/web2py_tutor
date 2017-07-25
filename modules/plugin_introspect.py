@@ -71,32 +71,32 @@ def get_exposed_function_code(fun_name, code=None):
     return "\n".join(result)
 
 
-    
+
 def lessons_menu(return_plain=False):
     request = current.request
-    
+
     app = request.application
     c = request.controller
-    dirpath = apath('%s/controllers' % app, r=request)    
-    
+    dirpath = apath('%s/controllers' % app, r=request)
+
     lessons  = [ c[:-len('.py')]   for c in os.listdir( dirpath )      if c.startswith('lesson') and c.endswith('.py')]
     lessons.sort()
-    
+
     if return_plain:
         return lessons
     else:
         menu = [  A(  lesson[len("lesson"):].title(),  _href=URL(lesson, 'index') )     for lesson in lessons   ]
         return UL(menu)
-        
+
 def exposed_functions_names(controller=None):
-    
+
     request = current.request
-    
+
     app = request.application
     controller = controller or request.controller
     fpath = apath('%s/controllers/%s.py' % (app, controller), r=request)
     data = open(fpath).read()
-    
+
     items = find_exposed_functions(data)
     items = [i for i in items if i != 'index']
     return items
@@ -104,16 +104,16 @@ def exposed_functions_names(controller=None):
 
 def task_marker(item):
     """marks tasks in menu
-    
+
     if user has done the task wil mark with "+"
     if user has tried, but not finished "-" (or percent of completion)
-    
+
     if not tried (or not logged in) "*"
     """
     auth = current.auth
     db = current.db
-    
-    if auth.is_logged_in(): 
+
+    if auth.is_logged_in():
         task_key = current.request.controller + "/" + item
         q = query_unique_task_user = (db.learn.task_key==task_key) & (db.learn.user_id==auth.user_id)
         task_info = db( q ).select().first()
@@ -125,7 +125,7 @@ def task_marker(item):
                 # return "-"
                 return SPAN("(%s%%)" % task_info.mark, _class="task-marker unfinished", _style="color:red; vertical-align: super; font-size:0.6em;")
         return SPAN("*", _class="task-marker not-started", _style="color:red; vertical-align: super; ")
-    
+
     return "*"
     # exposed_functions[item]
 
@@ -193,8 +193,8 @@ def TOGGLABLE_CONTENT(name, content):
     """
     d=this.nextElementSibling.style.display; this.nextElementSibling.style.display = (d=='block'||d=='') ? 'none': 'block';
     """
-    
-    return CAT( 
+
+    return CAT(
 
         SPAN( name, _class="button", _onclick=js_toggle, _style="cursor:hand"),
         SPAN( content , _class="togglable")
@@ -208,7 +208,7 @@ def CODEMIRROR(code, language="python", task_key=None):
         req = current.request
         task_key = req.controller + "/" + req.function
     return XML(current.response.render('codemirror.html', dict(code=code, language=language, task_key=task_key)))
-    
+
 
 import traceback
 import functools
@@ -279,16 +279,16 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=Fals
                                                 dict(content=content, codes=codes)
                                                ))
         # menu
-         
+
         menu_ = TOGGLABLE_CONTENT("[ Meniu ]", menu())
-        
+
         # next menu
         items = exposed_functions_names()
         req = current.request
         nr = items.index( req.function )
         next = items[nr+1] if nr < len(items)-1  else None
         prev = items[nr-1] if nr > 0  else None
-        
+
         a_next = A("[ Pirmyn ]", _href=URL(next))   if  next!=None  else ""
         a_prev = A("[ Atgal ]", _href=URL(prev))   if  prev!=None  else ""
         navigate_prev_next = CAT( a_prev, " ",  a_next )
@@ -315,8 +315,8 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=Fals
                                                      )
                                                ) )
         # return  gluon.template.render(content='...', context=<vars>)
-    return result 
-    
+    return result
+
 def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=None, imitateCLI=False):
 
     if code is None:
@@ -328,13 +328,13 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
 
     t = task(  code )
     student_lines = t['student_lines']
-    
+
     # group lines into chunks (of not/placeholders)
     chunks = []
-    
+
     current_chunk = ""
     placeholder_line_nrs = [p['line_nr'] for p in t['placeholders']]
-    
+
     # save answers in session
     req = current.request
     session = current.session
@@ -347,7 +347,7 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
 
     session.setdefault( 'full_codes', {} )
     session.full_codes[ task_key ] = code
-    
+
     session.setdefault( 'initial_codes', {} )
     session.initial_codes[ task_key ]  = [p['given'] for p in t['placeholders'] ]
 
@@ -358,20 +358,20 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
                 current_chunk = ""
 
             chunks.append( "###placeholder\n\n"+ line  ) # add placeholder
-            
+
         else:
             current_chunk += line + "\n"
 
     if current_chunk:  # flush nonplaceholder chunk
             chunks.append( current_chunk[:-1] )
 
-    
+
     if decorate:
         return CODEMIRROR( chunks, task_key=task_key )
     else:
         return chunks
 
-    
+
 def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     """Gets code of either the request.function (it it is the callee) or the provided function"""
 
@@ -392,42 +392,42 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     # lines, start_line = inspect.getsourcelines( f )
     # # code = inspect.getsource( f )
     # code = ''.join( lines )
-    
+
     # remove some function calls from code
-    code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code) 
-    code = re.sub(r",\s*?index\(\s*?\)", "", code) 
-    code = re.sub(r"^@show_.+?$", "", code, flags=re.MULTILINE) 
-    code = re.sub(r"^@tutor.*?$", "", code, flags=re.MULTILINE) 
+    code = re.sub(r",\s*?get_active_code\(\s*?\)", "", code)
+    code = re.sub(r",\s*?index\(\s*?\)", "", code)
+    code = re.sub(r"^@show_.+?$", "", code, flags=re.MULTILINE)
+    code = re.sub(r"^@tutor.*?$", "", code, flags=re.MULTILINE)
     # remove/hide lines by directive "###HIDE"
     code = re.sub(r"^.*?###HIDE.*?$", "", code, flags=re.MULTILINE)
     code = re.sub(r"^(\s*).*?###REPLACE:?\s*?(.*?)$", r"\1\2", code, flags=re.MULTILINE)
 
     current.session.imitateCLI = imitateCLI  # TODO: refactor to be saved per each task (now one instance is for all, and if the task is switched in other tab without reloading, migt be problems)..
-    
-    if imitateCLI: 
+
+    if imitateCLI:
         # hide def
         code = re.sub(r"^def.*$", "", code, flags=re.MULTILINE)
         code = code.lstrip()
-        
+
         # dedent by 4 spaces:
         code = re.sub(r"^    (.*)$", r"\1", code, flags=re.MULTILINE)
-        
-        
+
+
         if 'print' in code:
             # hide last return (as it should flush outputs of print)
-            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', '', code, flags=re.MULTILINE )
+            code = re.sub( r'^(return)(.*?)\s*?$', '', code, flags=re.MULTILINE )
         else:
         # convert return to print (it should be on last line) # todo: maybe just hide it?
         # code = code.rstrip().replace( 'return', 'print(' ) + ' )'
         # if isinstance(imitateCLI, dict) and 'return' in imitateCLI:
             # code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1'+imitateCLI['return']'+'(\3 )', code, flags=re.MULTILINE )
-            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
-        
-        
-        
-    # code = re.sub(r"@show_menu", "", code) 
-    # code = re.sub(r"@show_code", "", code) 
-    
+            code = re.sub( r'^(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
+
+
+
+    # code = re.sub(r"@show_menu", "", code)
+    # code = re.sub(r"@show_code", "", code)
+
     if decorate:
         # return  CODE(code, language="python", link='/examples/global/vars/', counter=start_line)
         code = CODEMIRROR(code)
@@ -437,7 +437,7 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
 
 
 # def get_file_function_code(controller, function):
-    # pass 
+    # pass
 
 import ast
 def get_module_doc(code):
