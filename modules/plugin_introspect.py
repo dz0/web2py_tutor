@@ -415,13 +415,13 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
 
         if 'print' in code:
             # hide last return (as it should flush outputs of print)
-            code = re.sub( r'^(return)(.*?)\s*?$', '', code, flags=re.MULTILINE )
+            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', '', code )
         else:
         # convert return to print (it should be on last line) # todo: maybe just hide it?
         # code = code.rstrip().replace( 'return', 'print(' ) + ' )'
         # if isinstance(imitateCLI, dict) and 'return' in imitateCLI:
             # code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1'+imitateCLI['return']'+'(\3 )', code, flags=re.MULTILINE )
-            code = re.sub( r'^(return)(.*?)\s*?$', r'\1print(\3 )', code, flags=re.MULTILINE )
+            code = re.sub( r'^(\s*?)(return)(.*?)\s*?$', r'\1print(\3 )', code )
 
 
 
