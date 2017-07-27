@@ -187,3 +187,70 @@ def grazinama_reiksme():
     print( add( "labas", " rytas" ) )
 
     return flush_print()
+
+@tutor(imitateCLI=True)
+def vykdymo_eiliskumas():
+    def add(a, b):
+        print( "vykdom add:", a, b )
+        return a+b
+
+    def maximum(x, y):
+        print( "vykdom maximum:", x, y )
+
+        if x > y:
+            return x
+        else:
+            return y
+
+    # kokia pirmiau bus vykdoma "maximum", nes
+    # ją reikia suskaičiuot, kad žinotum "add" argumento reikšmę
+    result = add(10, maximum( 2, 5 ) )
+    return flush_print()
+
+
+@tutor(imitateCLI=True)
+def vykdymo_eiliskumas_test1():
+    def add(a, b):
+        print( "vykdom add:", a, b )
+        return a+b
+
+    def maximum(x, y):
+        print( "vykdom maximum:", x, y )
+
+        if x > y:
+            return x
+        else:
+            return y
+
+    ats = add( add(2, 5), maximum( 2, 5 ) ) ###PLACEHOLDER:--> ? = ?( ?(2, 5), ?( 2, 5 ) )
+    print( ats )
+
+    return flush_print()
+
+
+@tutor(imitateCLI=True)
+def aprasymas():
+
+    def maziausia(x, y): ###PLACEHOLDER:--> def ?(x, )
+        if x > y:
+            return y
+        else:
+            return x ###PLACEHOLDER:-->  ?
+
+    print( maziausia(3, 5)  )
+
+    return flush_print()
+
+@tutor(imitateCLI=True)
+def aprasymas2():
+
+    def fun(y, x): ###PLACEHOLDER:--> def ?
+        if x > 10:
+            return y
+
+
+    print( fun(3, 5)  )
+    print( fun(13, 13)  )
+    print( fun(20, 100)  )
+
+    return flush_print()
