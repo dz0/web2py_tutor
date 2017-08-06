@@ -61,7 +61,8 @@ def matricos():
     for row in M:
         print( row )
         
-    return flush_print()
+    return flush_print() ###HIDE
+
         
         
 @tutor(imitateCLI=True)
@@ -78,7 +79,7 @@ def criss_cross2():
     for row in M:
         print( row )
         
-    return flush_print()
+    return flush_print()  ###HIDE
 
 
 @tutor(imitateCLI=True)
@@ -98,7 +99,7 @@ def islaidos():
     for row in M:          # imam po eilutę
         print( row[0] )    # ir joje spausdinam 0 el.
 
-    return flush_print()
+    return flush_print()  ###HIDE
 
 
 @tutor(imitateCLI=True)
@@ -113,6 +114,7 @@ def islaidos_fun1():
         ]
     
     def print_col(name):
+        print( name )
         nr = columns.index(name) ###PLACEHOLDER:--> nr = columns.???(name)  # suranda, elemento "name" vietą/numerį sąraše 
         for row in M:         ###PLACEHOLDER:--> ? # imam po eilutę
             print( row[nr] )  ###PLACEHOLDER:--> ? # spausdinam jos nr-tąjį elementą
@@ -122,6 +124,5 @@ def islaidos_fun1():
     print()  # padarys tuščia eilutę
     print_col('Food')
     
-    return flush_print()
-
+    return flush_print() ###HIDE
 
