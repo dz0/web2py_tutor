@@ -83,13 +83,14 @@
                         highlight_placeholder(cm, "initial");
                         placeholders['{{=task_key}}'].push( cm );
                         show_hint(cm, "kažką reik pakeisti");
-                        {{=XML("ajax('%s', ['task_key'], ':eval'); "% URL('tutor', 'placeholders_fill_in_last_response') ) }}
                         {{#=XML(js_highligth ) }}
                     }
 
                     cm.refresh();
                     
             {{  pass }}
+            {{=XML("ajax('%s', ['task_key'], ':eval'); "% URL('tutor', 'placeholders_fill_in_last_response') ) }}
+
 
 
             
