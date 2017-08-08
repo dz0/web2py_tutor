@@ -56,7 +56,7 @@ def sarasai():
     print("Finansai", Finansai)
 
     # susumuojam balansą
-    balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = ?(Finansai)
+    balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = sum(?)
     print("Dabar turim:", balansas )
 
     return flush_print()
@@ -67,17 +67,19 @@ def vidurkis():
     Pazymiai = [6, 8, 4, 10]
 
     suma = sum( Pazymiai )
-    kiek = len( Pazymiai )  # asdf  ###PLACEHOLDER:--> kiek = ?(Pazymiai)  # hint: sąrašo ilgis
+    kiek = len( Pazymiai )   ###PLACEHOLDER:--> kiek = ?(Pazymiai)  # hint: sąrašo ilgis
     print("Vidurkis:", suma / kiek )
 
     return flush_print()
+
+
 
 @tutor(imitateCLI=True)
 def perrinkimas_grafikas():
 
     Pazymiai = [6, 9, 3, 7]
 
-    print( "Stulpelinė diagrama (horiz.):" )
+    print( "Stulpelinė diagrama (horizontali):" )
 
     for pazymys in Pazymiai: # imam po pažymį iš sąrašo
         # nurodėm kintamojo pavadinimą "pazymys",
@@ -105,6 +107,22 @@ def saraso_pertvarkymas():
     print( money )
 
     return flush_print()
+
+@tutor(imitateCLI=True)
+def filtravimas():
+    
+    Pazymiai = [6, 9, 3, 7] 
+    vidurkis = sum( Pazymiai )/ len( Pazymiai )  
+    
+    print( "Didesni už vidurkį" ) 
+    
+    for paz in Pazymiai:  ###PLACEHOLDER:--> ? paz in Pazymiai?
+        if paz > vidurkis:
+            print( paz ) ###PLACEHOLDER:--> print( ? ) 
+    
+    return flush_print()
+
+    
 
 @tutor(imitateCLI=True)
 def filtravimas_i_nauja_sarasa():
@@ -158,99 +176,7 @@ def lygiagretus_perrinkimas():
             print( v )  ###PLACEHOLDER:--> ?
 
     return flush_print()
-""
+
 
 # https://docs.google.com/document/d/15bBFcodY6f6aZ6D2Dco94fwbo2OBeZKPS-8gq7CsPAs/edit
 
-#####
-
-@tutor(imitateCLI=True)
-def _funkcijos():
-
-
-    def pasveikink(vardas):
-        print( "Hi, " + vardas )
-
-    pasveikink( "Joe" )
-    pasveikink( "Antanas" )
-
-    return flush_print()
-
-@tutor(imitateCLI=True)
-def grazinama_reiksme():
-    def add(a, b):
-        result = a+b
-        return result
-
-    print( add( 4, 6 ) )
-    print( add( 4, -6 ) )
-    print( add( "labas", " rytas" ) )
-
-    return flush_print()
-
-@tutor(imitateCLI=True)
-def vykdymo_eiliskumas():
-    def add(a, b):
-        print( "vykdom add:", a, b )
-        return a+b
-
-    def maximum(x, y):
-        print( "vykdom maximum:", x, y )
-
-        if x > y:
-            return x
-        else:
-            return y
-
-    # kokia pirmiau bus vykdoma "maximum", nes
-    # ją reikia suskaičiuot, kad žinotum "add" argumento reikšmę
-    result = add(10, maximum( 2, 5 ) )
-    return flush_print()
-
-
-@tutor(imitateCLI=True)
-def vykdymo_eiliskumas_test1():
-    def add(a, b):
-        print( "vykdom add:", a, b )
-        return a+b
-
-    def maximum(x, y):
-        print( "vykdom maximum:", x, y )
-
-        if x > y:
-            return x
-        else:
-            return y
-
-    ats = add( add(2, 5), maximum( 2, 5 ) ) ###PLACEHOLDER:--> ? = ?( ?(2, 5), ?( 2, 5 ) )
-    print( ats )
-
-    return flush_print()
-
-
-@tutor(imitateCLI=True)
-def aprasymas():
-
-    def maziausia(x, y): ###PLACEHOLDER:--> def ?(x, )
-        if x > y:
-            return y
-        else:
-            return x ###PLACEHOLDER:-->  ?
-
-    print( maziausia(3, 5)  )
-
-    return flush_print()
-
-@tutor(imitateCLI=True)
-def aprasymas2():
-
-    def fun(y, x): ###PLACEHOLDER:--> def ?
-        if x > 10:
-            return y
-
-
-    print( fun(3, 5)  )
-    print( fun(13, 13)  )
-    print( fun(20, 100)  )
-
-    return flush_print()
