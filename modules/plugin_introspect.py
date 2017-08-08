@@ -213,15 +213,19 @@ def CODEMIRROR(code, language="python", task_key=None):
 import traceback
 import functools
 
-def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=False):
+def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=False, flush_print=None):
     """smart decorator"""
 
     if f is None:  # a hack to allow decorate with syntax:    @tutor(extra_files=['models/model.py', 'views/view.html'])
-        return functools.partial(tutor, extra_files=extra_files, inject_tutor_as_block=inject_tutor_as_block, imitateCLI=imitateCLI)
+        return functools.partial(tutor, extra_files=extra_files, inject_tutor_as_block=inject_tutor_as_block, imitateCLI=imitateCLI, flush_print=flush_print)
 
     def result():
         try:
             content = f()
+           
+            if imitateCLI and flush_print:
+                content = flush_print()            
+                       
             if isinstance(content, dict):
                 # req = current.request
                 # view_root = apath("%s/views/" % (req.application), r=req)

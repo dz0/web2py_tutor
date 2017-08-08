@@ -61,11 +61,11 @@ def matricos():
     for row in M:
         print( row )
         
-    return flush_print() ###HIDE
+    return flush_print() ###HIDE  before  @tutor accepted flush_print
 
         
         
-@tutor(imitateCLI=True)
+@tutor(imitateCLI=True, flush_print=flush_print)
 def criss_cross2():
     M = [
             [ 'O', 'X', ' ' ],
@@ -79,10 +79,9 @@ def criss_cross2():
     for row in M:
         print( row )
         
-    return flush_print()  ###HIDE
 
 
-@tutor(imitateCLI=True)
+@tutor(imitateCLI=True, flush_print=flush_print)
 def islaidos():
     columns = ['Food', 'Transport', 'Housing']
     
@@ -99,10 +98,9 @@ def islaidos():
     for row in M:          # imam po eilutę
         print( row[0] )    # ir joje spausdinam 0 el.
 
-    return flush_print()  ###HIDE
 
 
-@tutor(imitateCLI=True)
+@tutor(imitateCLI=True, flush_print=flush_print)
 def islaidos_fun1():
     columns = ['Food', 'Transport', 'Housing']
     
@@ -124,5 +122,11 @@ def islaidos_fun1():
     print()  # padarys tuščia eilutę
     print_col('Food')
     
-    return flush_print() ###HIDE
 
+
+# @tutor(imitateCLI=True, flush_print=flush_print)
+# def test_flush():
+    # for i in range(10):
+        # print(i)
+        
+    
