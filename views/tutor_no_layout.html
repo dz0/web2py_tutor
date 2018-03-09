@@ -1,0 +1,86 @@
+<head>
+
+{{block head}}
+{{
+    CMROOT="/admin/static/codemirror"
+    # CMROOT="http://codemirror.net"
+    response.files.append(URL('static','js/jquery.balloon.js'))
+}}
+{{include 'web2py_ajax.html'}}
+
+  <link rel="stylesheet" href="{{=CMROOT}}/lib/codemirror.css">
+    <script src="{{=CMROOT}}/lib/codemirror.js"></script>
+    <script src="{{=CMROOT}}/addon/edit/matchbrackets.js"></script>
+    
+    <script src="{{=CMROOT}}/mode/python/python.js"></script>
+    <style> 
+
+        .CodeMirror { height: auto; border: 1px solid #ddd; }
+        
+        .CodeMirror-scroll { max-height: 200px; } 
+        .CodeMirror-scroll { min-height: 200px; }
+        .CodeMirror pre { padding-left: 7px; line-height: 1.25; }
+        
+        .placeholder { background: #FFFFA9 }
+
+        #content { padding: 20px; background: #fafafa; }
+
+        a {text-decoration: none }
+    </style>
+    <script>
+        $( document ).ready(function() {
+            $('#menu .togglable').hide(); //css('display', 'none');
+            // $('#menu .button').mouseover( function(){ $("#menu .togglable").show() });
+
+            // let codemirror load first
+            // setTimeout( function(){ $('#codes .togglable').hide(); }, 100); // css('display', 'none');
+            
+            $('#menu .button').click( function(){ $("#menu .togglable").toggle() });
+            $('#codes .button').click( function(){ $("#codes .togglable").toggle() });
+
+            $('#content').balloon({ position: "bottom" });
+    });
+    </script>
+{{end}}
+
+
+</head>
+<body>
+
+
+
+Sistema skirta susipažinti su Python bei Web2py galimybėmis. Pateikiami pavyzdžiai kartu su kodu.
+<br > Taip pat bus užduotys, kuriose reikia pabaigti kodo fragmentus, kad jie atitiktų pateiktą pavyzdį.
+
+{{=MARKMIN( about , BR() ) if globals().get('about') else '' }}
+
+{{ course = A("Pamokos", _href=URL('default', 'index')) }}
+
+{{ lesson_name = request.controller[len("lesson"):]
+  lesson_name = " ".join(lesson_name.split("_")[1:]) .title()
+}}
+
+
+{{=H3(CAT(course , " / ", lesson_name, " / ",  current_category + ( " / " * bool(current_category))) , _style="display:inline")  }}
+{{=request.function}}
+
+<br ><br>
+{{=navigate_prev_next}} {{ =SPAN( menu, _id="menu" ) }}
+
+<br /><br />
+
+{{=DIV( codes, _id="codes" )}}
+
+
+<span class="button">[ Rezultatas ({{=A("plain", _href=request.url+"?"+request.env.query_string+"&plain", _style="color: grey")}}) ]</span> <br/>
+{{=DIV( content, _id="content" ,  _title='Galite naudoti Ctrl+Shift+I ("inspect element"), kad peržiūrėtumėte html "vidurius"' )}}
+<br />
+
+{{#=navigate_prev_next }}
+
+
+<div style="float:right">
+ {{=LOAD('default','user',ajax=True, ajax_trap=False)}}
+</div>
+
+</body>
