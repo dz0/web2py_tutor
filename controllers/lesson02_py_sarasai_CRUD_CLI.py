@@ -54,10 +54,11 @@ def sarasai():
     Finansai = [ 10, 12, 0, 20, 8, -25, -5 ]  # pajamos/išlaidos per savaitę
 
     print("Finansai", Finansai)
+    print("Transakcijų kiekis:", len(Finansai))
 
     # susumuojam balansą
     balansas = sum(Finansai) ###PLACEHOLDER:--> balansas = sum(?)
-    print("Dabar turim:", balansas )
+    print("Dabar turim:", balansas ) ###PLACEHOLDER:--> print("Dabar turim:", ? )
 
     return flush_print()
 
@@ -71,6 +72,28 @@ def vidurkis():
     print("Vidurkis:", suma / kiek )
 
     return flush_print()
+
+
+
+@tutor(imitateCLI=True)
+def perrinkimas_su_vertinimu():
+
+    Pazymiai = [6, 9, 5, 3, 7]
+
+    for pazymys in Pazymiai: # imam po pažymį iš sąrašo
+
+        reakcija = ""  # default'inė reikšmė
+
+        if pazymys >= 8:
+            reakcija = "OK!"
+
+        if pazymys < 5:
+            reakcija = "ech..."
+
+        print(pazymys, reakcija )
+
+    return flush_print()
+
 
 
 
@@ -100,29 +123,41 @@ def saraso_pertvarkymas():
     money[1] = 30  # pakoreguojam antrąją reikšmę
     print( money )
 
-    del money[0]   # pašalinam pirmąją reikšmę
+    del money[0]   # pašalinam pirmąją (programuotojams-nulinę) reikšmę
     print( money )
 
     money.insert(0, 13) # į priekį įterpiam 13
     print( money )
 
+
     return flush_print()
+
+
+@tutor(imitateCLI=True)
+def elementu_numeravimas_klaida():
+    vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
+    # eil nr.:   0         1          2           3
+
+    print( vardai [4] )  # tokiu nr. elemento nėra
+
+    return flush_print()
+
 
 @tutor(imitateCLI=True)
 def filtravimas():
-    
-    Pazymiai = [6, 9, 3, 7] 
-    vidurkis = sum( Pazymiai )/ len( Pazymiai )  
-    
-    print( "Didesni už vidurkį" ) 
-    
+
+    Pazymiai = [6, 9, 3, 7]
+    vidurkis = sum( Pazymiai )/ len( Pazymiai )
+
+    print( "Didesni už vidurkį" )
+
     for paz in Pazymiai:  ###PLACEHOLDER:--> ? paz in Pazymiai?
         if paz > vidurkis:
-            print( paz ) ###PLACEHOLDER:--> print( ? ) 
-    
+            print( paz ) ###PLACEHOLDER:--> print( ? )
+
     return flush_print()
 
-    
+
 
 @tutor(imitateCLI=True)
 def filtravimas_i_nauja_sarasa():
@@ -143,7 +178,10 @@ def filtravimas_i_nauja_sarasa():
 
 @tutor(imitateCLI=True)
 def elementu_numeravimas():
+
     vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
+
+    # įrašykite trūkstamus eil. nr, kad gautumėt rodomą rezultatą
 
     print( vardai [0] ) ###PLACEHOLDER:--> print( vardai [?] )
 
@@ -151,6 +189,7 @@ def elementu_numeravimas():
     print( vardai )
 
     vardai.append( vardai[0] )  ###PLACEHOLDER:--> vardai.append( vardai[?] )
+    print( vardai)
 
     del vardai[3] ###PLACEHOLDER:--> del vardai[?]
     print( vardai)
@@ -158,25 +197,30 @@ def elementu_numeravimas():
     return flush_print()
 
 
-@tutor(imitateCLI=True)
-def elementu_numeravimas_klaida():
-    vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
-    print( vardai [4] )
-
-    return flush_print()
 
 @tutor(imitateCLI=True)
 def lygiagretus_perrinkimas():
+    prekes = ['duona', 'sūris', 'alus']
+    kainos = [1.2, 5, 1]
+
+    for preke, kaina in zip(prekes, kainos):
+        print( preke, "kainuoja", kaina )
+
+    return flush_print()
+
+
+@tutor(imitateCLI=True)
+def lygiagretus_perrinkimas_2():
     vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
     pinigai = [1000, 2000, 500, 8000]
 
     # atspausdinkim vardus tų, kas turi daugiau negu 1000 pinigų
-    for v, p in zip(vardai, pinigai): ###PLACEHOLDER:--> for v, ? in ?(vardai, pinigai):
-        if p > 1000:
-            print( v )  ###PLACEHOLDER:--> ?
+    for vard, pin in zip(vardai, pinigai): ###PLACEHOLDER:--> for vard, ? in ?(vardai, pinigai):
+        if pin > 1000:
+            print( vard )  ###PLACEHOLDER:--> ?
 
     return flush_print()
 
-
+print()
 # https://docs.google.com/document/d/15bBFcodY6f6aZ6D2Dco94fwbo2OBeZKPS-8gq7CsPAs/edit
 
