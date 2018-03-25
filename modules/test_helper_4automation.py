@@ -32,7 +32,8 @@ def my_tokenizer( code ):
         else:
             rez2.extend(s) # split nonwords to symbols
 
-    rez2 = list(filter(str.strip, rez2)) # filter out spaces
+    # rez2 = list(filter(str.strip, rez2)) # filter out spaces
+    rez2 = [ x for x in rez2 if x.strip() ] # filter out spaces
     return rez2
 
 def get_tokens(code, filter_spaces=True, group_by_parentheses_one_level=False):
