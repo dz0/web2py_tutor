@@ -8,24 +8,24 @@ def index( ):
     return menu()
 
 @tutor
-def variables():  ###REPLACE // Kintamieji:
+def variables():  ###REPLACE    # Kintamieji:
     
     name = 'Tom'  ###PLACEHOLDER:--> $name = 'Tom'
     age = 18      ###PLACEHOLDER:--> $age = 18
     
-    return name, age ###REPLACE // rezultate: name, age 
+    return name, age ###REPLACE# rezultate: name, age 
 
 @tutor
-def variable_increase():  ###REPLACE // Kintamųjų padidinimas:
+def variable_increase():  ###REPLACE # Kintamųjų padidinimas:
     money = 100  ###PLACEHOLDER:--> $money = 100;
     money += 3   ###PLACEHOLDER:--> $money += 3;
     money += 1   ###PLACEHOLDER:--> $money++;
     
-    return money ###REPLACE // rezultate: money 
+    return money ###REPLACE # rezultate: money 
 
 
 @tutor
-def functions():        ###REPLACE // Funkcijos:
+def functions():        ###REPLACE # Funkcijos:
     def dvigubas(x):    ###PLACEHOLDER:--> function dvigubas($x) {
         result = x*2    ###PLACEHOLDER:-->    $result = $x*2;
         return result   ###PLACEHOLDER:-->    return $resul;

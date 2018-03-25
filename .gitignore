@@ -3,3 +3,5 @@
 errors/**
 .idea/**
 sessions/**
+databases/**
+progress.log
