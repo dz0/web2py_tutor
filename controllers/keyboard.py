@@ -5,13 +5,15 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
-from plugin_introspect import tutor as original_tutor, menu, generate_exposed_functions_info, CODEMIRROR
+from plugin_introspect import tutor as original_tutor, menu, generate_exposed_functions_info, CODEMIRROR, unpack_def
 import re
+from test_helper_4automation import my_tokenizer
 
 
 def get_code_samples():
     exposed_functions = generate_exposed_functions_info('lesson02_py_sarasai_CRUD_CLI')
     codes = [ re.sub('###PLACEHOLDER.*', '', x['code']).replace('return flush_print()', '')  for x in exposed_functions.values() ] 
+    
     return codes
 
 def index():
@@ -63,11 +65,9 @@ def obfuscate(html, bla_words=['bla']):
             result.append(bla())
     return ''.join(result)
 
-
 def get_styles():
     return HtmlFormatter().get_style_defs('.highlight')
 
-from test_helper_4automation import my_tokenizer
 def check_mistakes(sample, user_code):
 
     def adapt(code):
@@ -130,9 +130,9 @@ def check_mistakes(sample, user_code):
     for i in range(len(user_code)):
         if user_code[i] != sample[i]:
             # mistake_place = get_original_index(i)
+            mistake = user_code[i] 
             mistake_place = i
             mistake_place = get_token_place(i)
-            mistake = original_user_code[mistake_place]
 
             if mistake in ' \t':
                 mistake = "&nbsp;"
@@ -144,12 +144,12 @@ def check_mistakes(sample, user_code):
                     # + '___MISTAKE_START___'+ mistake + '___MISTAKE_END___'
                     + '___MISTAKE___'
                     
-                    + original_user_code[mistake_place+1:] 
+                    + original_user_code[mistake_place+len(mistake):] 
                     )
             html = highlighted( marked_mistake )
             
             html = html.replace( '___MISTAKE___', 
-                                '<span class="mistake" hint="'+ repr(user_code[i])+' instead of '+repr(sample[i])+'">'
+                                '<span class="mistake" hint="'+ repr(mistake)+' instead of '+repr(sample[i])+'">'
                                         + mistake + "</span>"
                                 )
             # html = html.replace( '___MISTAKE_START___', '<span class="mistake">')
@@ -165,35 +165,50 @@ def check_mistakes(sample, user_code):
     if len(user_code) < len(sample):
         return "User code too short"
     
-    return None
-        
+    return ''
+
+
+
 
 def demo():
     sample = get_code_samples()[1]
-
-    sample = """
-n = 'ą'
-for x in "[3, 5,  7]": # 123 
-    suma += x  # ęąčę
-    print( x, suma )
-    """
+    name, docs, sample = prepare_sample_from_def(sample) ## assumes it is def
+    
+#     sample = """
+# n = 'ą'
+# for x in "[3, 5,  7]": # 123 
+#     suma += x  # ęąčę
+#     print( x, suma )
+#     """
     sample = sample.strip(" \n\t")
 
     user_code = request.vars.user_code or ''
-    mistake = ''
-    if user_code:
-        mistake = check_mistakes(sample, user_code)
+    
+    mistake = check_mistakes(sample, user_code)
 
     form = FORM(TEXTAREA(user_code, _name='user_code'), INPUT(_type='submit'))
 
     return CAT(
-
+        name, BR(), docs,
         PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
         STYLE(get_styles()), 
-        mistake,
+        SPAN(mistake, _class='mistake info'),
         form,
         # CODEMIRROR(user_code) 
-        BEAUTIFY(exposed_functions)
+        # BEAUTIFY(exposed_functions)
     )
 
 
+
+def prepare_sample_from_def(orig_code):
+    # return "name", "docs", orig_code
+    
+    code = orig_code.strip()
+    name = re.findall('^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
+    code = unpack_def(code).strip()
+    if code.startswith('"""'):
+        docs = re.findall('^"""(.*?)"""', code, re.MULTILINE)[0]
+        code = code[len(docs)+6:]
+    else:
+        docs = ""
+    return name, docs, code

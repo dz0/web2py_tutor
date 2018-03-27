@@ -375,6 +375,14 @@ def get_task_code(f=None, code=None, decorate=True, task_key=None, extra_files=N
     else:
         return chunks
 
+def unpack_def(code):
+    # hide def
+    code = re.sub(r"^def.*$", "", code, flags=re.MULTILINE)
+    code = code.lstrip()
+    # TODO: count spaces of  first line indent
+    # dedent by 4 spaces:
+    code = re.sub(r"^    (.*)$", r"\1", code, flags=re.MULTILINE)
+    return code
 
 def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     """Gets code of either the request.function (it it is the callee) or the provided function"""
@@ -409,13 +417,7 @@ def get_active_code(f=None, code=None, decorate=True, imitateCLI=False):
     current.session.imitateCLI = imitateCLI  # TODO: refactor to be saved per each task (now one instance is for all, and if the task is switched in other tab without reloading, migt be problems)..
 
     if imitateCLI:
-        # hide def
-        code = re.sub(r"^def.*$", "", code, flags=re.MULTILINE)
-        code = code.lstrip()
-
-        # dedent by 4 spaces:
-        code = re.sub(r"^    (.*)$", r"\1", code, flags=re.MULTILINE)
-
+        code = unpack_def(code)
 
         if 'print' in code:
             # hide last return (as it should flush outputs of print)

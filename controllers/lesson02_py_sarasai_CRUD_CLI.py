@@ -135,6 +135,8 @@ def saraso_pertvarkymas():
 
 @tutor(imitateCLI=True)
 def elementu_numeravimas_klaida():
+    """Pažiūrim, kas bus, jei imsime sąrašo elementą, kuris yra "už borto"""
+
     vardai = ['Jurgis', 'Antanas', 'Aloyzas', 'Martynas']
     # eil nr.:   0         1          2           3
 
