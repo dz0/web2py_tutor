@@ -198,7 +198,7 @@ def pick_task_record(user_id):
         # check unfinished
         q &=  kl.mark<100
         if not db(q).isempty():
-           return db(q).last()
+           return db(q).last()  # TODO: kažkodėl nesuveikia
         
         else:
             #pick new task
@@ -256,7 +256,7 @@ def task():
 
     # task_key=lesson+'/'+task_name
 
-    task_record = pick_task_record(auth.user_id)
+    task_record = pick_task_record(auth.user_id) 
 
     docs, sample = get_code_sample(task_record.lesson, task_record.task)
     # task_name, docs, sample = prepare_sample_from_def(sample)
