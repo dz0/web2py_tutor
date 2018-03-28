@@ -5,19 +5,28 @@ from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 
-from plugin_introspect import tutor as original_tutor, menu, generate_exposed_functions_info, CODEMIRROR, unpack_def
+from plugin_introspect import tutor as original_tutor, menu, generate_exposed_functions_info,  unpack_def
 import re
 from test_helper_4automation import my_tokenizer
 
+def clean_task_code(def_code):
+    return re.sub('###PLACEHOLDER.*', '', x['code']).replace('return flush_print()', '')
 
 def get_code_samples():
     exposed_functions = generate_exposed_functions_info('lesson02_py_sarasai_CRUD_CLI')
-    codes = [ re.sub('###PLACEHOLDER.*', '', x['code']).replace('return flush_print()', '')  for x in exposed_functions.values() ] 
+    codes = [clean_task_code  for x in exposed_functions.values() ] 
     
     return codes
 
-def index():
-    return UL(map(PRE, get_code_samples()))
+def get_code_sample(lesson, task):
+    functions = generate_exposed_functions_info(lesson)
+    task_def = clean_task_code(functions[task]['code'])
+    task_name, docs, sample = prepare_sample_from_def(task_def)
+    return docs, sample
+
+
+# def index():
+#     return UL(map(PRE, get_code_samples()))
     # strip TASK replacements
 
 
@@ -68,7 +77,7 @@ def obfuscate(html, bla_words=['bla']):
 def get_styles():
     return HtmlFormatter().get_style_defs('.highlight')
 
-def check_mistakes(sample, user_code):
+def check_mistakes(sample, user_code, return_mark=False):
 
     def adapt(code):
         
@@ -81,6 +90,7 @@ def check_mistakes(sample, user_code):
     user_code = adapt(  user_code  )
     sample = adapt(  sample )
     original_user_code = user_code
+    original_sample = sample
 
     sample = my_tokenizer(sample)
     user_code = my_tokenizer(user_code)
@@ -131,8 +141,10 @@ def check_mistakes(sample, user_code):
         if user_code[i] != sample[i]:
             # mistake_place = get_original_index(i)
             mistake = user_code[i] 
-            mistake_place = i
             mistake_place = get_token_place(i)
+
+            if return_mark:
+                return 100*mistake_place/len(original_sample)
 
             if mistake in ' \t':
                 mistake = "&nbsp;"
@@ -162,6 +174,10 @@ def check_mistakes(sample, user_code):
                    
                    )
     
+    
+    if return_mark:
+        return 100*len(original_user_code)/len(original_sample)
+
     if len(user_code) < len(sample):
         return "User code too short"
     
@@ -169,10 +185,67 @@ def check_mistakes(sample, user_code):
 
 
 
+def pick_task_record(user_id):
+    kl = db.keyboard_learn
+    
+    q_user = kl.user_id==user_id 
+    q_time_interval = kl.scheduled_from < request.now() & request.now() < kl.scheduled_to
 
-def demo():
-    sample = get_code_samples()[1]
-    name, docs, sample = prepare_sample_from_def(sample) ## assumes it is def
+    q = q_user  &   q_time_interval
+    count = db(q).count()
+
+    if count < COUNT_PER_INTERVAL:
+        # check unfinished
+        q &=  mark<100
+        if not db(q).is_empty():
+           return db(q).last()
+        
+        else:
+            #pick new task
+            def pick_new_task():
+                # get already done/given tasks
+                already_given = [x.task_key for x in db(q_user).select(kl.task_key) ]
+                # already_given_lessons = db(q_user).select(kl.lesson)
+
+                from plugin_introspect import lessons_menu
+                lessons = lessons_menu(return_plain=True)
+                # while True: # TODO maybe prevent repetition of examples
+                lesson = random.choice( lessons )
+                tasks = generate_exposed_functions_info(lesson)
+                task = random.choice( tasks.keys() )
+                task_key = lesson + '/' + task
+
+                record = kl.insert(
+                    user_id=user_id,
+                    
+                    task_key=task_key,
+                    lesson=lesson,
+                    task=task,
+
+                    scheduled_from=request.now(),
+                    scheduled_to=request.now()+TIME_INTERVAL
+                    
+                )
+                # if not task_key in already_given:
+                return record
+                # def_code = clean_task_code(tasks[task]['code'])
+                # task_name, docs, sample = prepare_sample_from_def(sample)
+                # return lesson, task_name, docs, sample
+                
+            return pick_new_task()
+
+
+
+
+
+
+@auth.requires_login()
+# @auth.requires(lambda:request.client=='127.0.0.1' or auth.is_logged_in())
+def task():
+
+    # sample = get_code_samples()[1]
+    # lesson = "lesson02"
+    # task_name, docs, sample = prepare_sample_from_def(sample) ## assumes it is def
     
 #     sample = """
 # n = 'ą'
@@ -180,16 +253,52 @@ def demo():
 #     suma += x  # ęąčę
 #     print( x, suma )
 #     """
+
+    # task_key=lesson+'/'+task_name
+
+    task_record = pick_task_record()
+
+    docs, sample = get_code_sample(lesson, task)
+    # task_name, docs, sample = prepare_sample_from_def(sample)
+                # return lesson, task_name, docs, sample
+
     sample = sample.strip(" \n\t")
 
-    user_code = request.vars.user_code or ''
-    
-    mistake = check_mistakes(sample, user_code)
+    kl = db.keyboard_learn
+    # id_query = (kl.task_key==task_key) & (kl.user_id==auth.user_id)
 
+    # TODO
+    # time_interval = kl.scheduled_from < request.now() & request.now() < kl.scheduled_to
+
+    # record = db(id_query).select().first()
+    
+    user_code = request.vars.user_code or task_record.user_code or ''
+    mistake = check_mistakes(sample, user_code)
+    mark = check_mistakes(sample, user_code, return_mark=True)
+    
+    # if True:
+    if user_code:
+        
+        task_record.update( 
+            user_code=user_code,
+            mark=mark,
+            tries_count=task_record.tries_count+1
+
+        )
+        # db.keyboard_learn.update_or_insert(  id_query,
+        #     lesson=lesson,
+        #     task=task_name,
+        #     task_key=task_key,
+        #     user_code=user_code,
+        #     mark=mark
+        # )
+    
     form = FORM(TEXTAREA(user_code, _name='user_code'), INPUT(_type='submit'))
 
+
+
     return CAT(
-        name, BR(), docs,
+        task_name, BR(), docs,
         PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
         STYLE(get_styles()), 
         SPAN(mistake, _class='mistake info'),

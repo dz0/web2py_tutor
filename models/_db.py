@@ -161,6 +161,25 @@ db.define_table('learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('tries_count', 'integer', default=0),
                 )
 
+db.define_table('keyboard_learn',  # todo -- change to "plugin_tutor_learn" ?
+                    Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None ),
+                    # Field('user_id', "integer", default= auth_user.id if ),
+                    Field('lesson', 'string'),
+                    Field('task', 'string'),
+                    Field('task_key', 'string'),
+                    Field('user_code', 'string', default=''),  # what was entered into placeholders
+                    Field('mark', 'integer', default=0), # in percent
+                    Field('tries_count', 'integer', default=0),
+                    Field('keystroke_count', 'integer', default=0),
+                    Field('submitted_on', 'datetime', default=request.now),
+                    Field('scheduled_from', 'datetime', default=None, requires = IS_DATE(format=('%Y-%m-%d'))),
+                    Field('scheduled_to', 'datetime', default=None, requires = IS_DATE(format=('%Y-%m-%d'))),
+
+                )
+from datetime import timedelta
+TIME_INTERVAL = timedelta(days=2)
+COUNT_PER_INTERVAL = 3
+
 """
 from simplejson import loads, dumps 
 for field in ['responses', 'evaluations']:  # todo - maybe not needed?
