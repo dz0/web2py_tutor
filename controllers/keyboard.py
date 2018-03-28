@@ -10,7 +10,7 @@ import re
 from test_helper_4automation import my_tokenizer
 
 def clean_task_code(def_code):
-    return re.sub('###PLACEHOLDER.*', '', x['code']).replace('return flush_print()', '')
+    return re.sub('###PLACEHOLDER.*', '', def_code).replace('return flush_print()', '')
 
 def get_code_samples():
     exposed_functions = generate_exposed_functions_info('lesson02_py_sarasai_CRUD_CLI')
@@ -187,17 +187,17 @@ def check_mistakes(sample, user_code, return_mark=False):
 
 def pick_task_record(user_id):
     kl = db.keyboard_learn
-    
+    now = request.now
     q_user = kl.user_id==user_id 
-    q_time_interval = kl.scheduled_from < request.now() & request.now() < kl.scheduled_to
+    q_time_interval = (kl.scheduled_from < now)  &  ( kl.scheduled_to > now+TIME_INTERVAL)
 
     q = q_user  &   q_time_interval
     count = db(q).count()
 
     if count < COUNT_PER_INTERVAL:
         # check unfinished
-        q &=  mark<100
-        if not db(q).is_empty():
+        q &=  kl.mark<100
+        if not db(q).isempty():
            return db(q).last()
         
         else:
@@ -222,8 +222,8 @@ def pick_task_record(user_id):
                     lesson=lesson,
                     task=task,
 
-                    scheduled_from=request.now(),
-                    scheduled_to=request.now()+TIME_INTERVAL
+                    scheduled_from=request.now,
+                    scheduled_to=request.now+TIME_INTERVAL
                     
                 )
                 # if not task_key in already_given:
@@ -256,9 +256,9 @@ def task():
 
     # task_key=lesson+'/'+task_name
 
-    task_record = pick_task_record()
+    task_record = pick_task_record(auth.user_id)
 
-    docs, sample = get_code_sample(lesson, task)
+    docs, sample = get_code_sample(task_record.lesson, task_record.task)
     # task_name, docs, sample = prepare_sample_from_def(sample)
                 # return lesson, task_name, docs, sample
 
@@ -268,7 +268,7 @@ def task():
     # id_query = (kl.task_key==task_key) & (kl.user_id==auth.user_id)
 
     # TODO
-    # time_interval = kl.scheduled_from < request.now() & request.now() < kl.scheduled_to
+    # time_interval = (kl.scheduled_from < request.now) & (request.now  < kl.scheduled_to)
 
     # record = db(id_query).select().first()
     
@@ -298,7 +298,7 @@ def task():
 
 
     return CAT(
-        task_name, BR(), docs,
+        task_record.task, BR(), docs,
         PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
         STYLE(get_styles()), 
         SPAN(mistake, _class='mistake info'),
