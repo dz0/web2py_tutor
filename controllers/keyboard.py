@@ -94,7 +94,13 @@ def check_mistakes(sample, user_code, return_mark=False):
 
     sample = my_tokenizer(sample)
     user_code = my_tokenizer(user_code)
+    print('user_code', user_code)
 
+    def mark_till_mistake_token(i):
+        user_chars = len(''.join(user_code[:i]))  # [''] for empty user code
+        all_sample_tokens_chars = len(''.join(sample))
+        if all_sample_tokens_chars:
+            return  100* user_chars / all_sample_tokens_chars
     
     # def minify_spaces(code):
     #     import re
@@ -133,18 +139,17 @@ def check_mistakes(sample, user_code, return_mark=False):
     #         if i == stop:
     #             return orig_i+1
         
-    if len(user_code) > len(sample):
-        return "User code too long"
-    
+
 
     for i in range(len(user_code)):
-        if user_code[i] != sample[i]:
+        if user_code[i] != sample[i]: # if mistake
             # mistake_place = get_original_index(i)
             mistake = user_code[i] 
             mistake_place = get_token_place(i)
 
             if return_mark:
-                return 100*mistake_place/len(original_sample)
+                # return 100*mistake_place/len(original_sample)
+                return mark_till_mistake_token(i)
 
             if mistake in ' \t':
                 mistake = "&nbsp;"
@@ -172,11 +177,16 @@ def check_mistakes(sample, user_code, return_mark=False):
                     XML( html ),  
                     # marked_mistake,
                    
-                   )
-    
-    
+                   )      
+
+
+
     if return_mark:
-        return 100*len(original_user_code)/len(original_sample)
+        return mark_till_mistake_token(len(user_code))
+
+
+    if len(user_code) > len(sample):
+        return "User code too long"
 
     if len(user_code) < len(sample):
         return "User code too short"
@@ -184,79 +194,92 @@ def check_mistakes(sample, user_code, return_mark=False):
     return ''
 
 
+def qs_current_tasks(user_id=None):
+    kl = db.keyboard_learn
+    now = request.now
+    q_time_interval = (kl.scheduled_from < now)  &  ( kl.scheduled_to > now)
+    if user_id:
+        q_user = kl.user_id==user_id 
+        return q_user  &   q_time_interval
+    else:
+        return q_time_interval
 
 def pick_task_record(user_id):
     kl = db.keyboard_learn
-    now = request.now
-    q_user = kl.user_id==user_id 
-    q_time_interval = (kl.scheduled_from < now)  &  ( kl.scheduled_to > now+TIME_INTERVAL)
-
-    q = q_user  &   q_time_interval
-    count = db(q).count()
-
-    if count < COUNT_PER_INTERVAL:
-        # check unfinished
-        q &=  kl.mark<100
-        if not db(q).isempty():
-           return db(q).last()  # TODO: kažkodėl nesuveikia
-        
-        else:
-            #pick new task
-            def pick_new_task():
-                # get already done/given tasks
-                already_given = [x.task_key for x in db(q_user).select(kl.task_key) ]
-                # already_given_lessons = db(q_user).select(kl.lesson)
-
-                from plugin_introspect import lessons_menu
-                lessons = lessons_menu(return_plain=True)
-                # while True: # TODO maybe prevent repetition of examples
-                lesson = random.choice( lessons )
-                tasks = generate_exposed_functions_info(lesson)
-                task = random.choice( tasks.keys() )
-                task_key = lesson + '/' + task
-
-                record = kl.insert(
-                    user_id=user_id,
-                    
-                    task_key=task_key,
-                    lesson=lesson,
-                    task=task,
-
-                    scheduled_from=request.now,
-                    scheduled_to=request.now+TIME_INTERVAL
-                    
-                )
-                # if not task_key in already_given:
-                return record
-                # def_code = clean_task_code(tasks[task]['code'])
-                # task_name, docs, sample = prepare_sample_from_def(sample)
-                # return lesson, task_name, docs, sample
-                
-            return pick_new_task()
-
-
-
-
-
-
-@auth.requires_login()
-# @auth.requires(lambda:request.client=='127.0.0.1' or auth.is_logged_in())
-def task():
-
-    # sample = get_code_samples()[1]
-    # lesson = "lesson02"
-    # task_name, docs, sample = prepare_sample_from_def(sample) ## assumes it is def
     
+    q = qs_current_tasks(user_id)
+
+    # check unfinished
+    # print db(q)._select(kl.task_key)
+
+    q_unfinished =  q &  (kl.mark != 100)
+    count = db(q_unfinished).count()
+    # if we have unfinished tasks - give last of them..
+    if not db(q_unfinished).isempty() :
+        return db(q_unfinished).select().last()  # TODO: kažkodėl nesuveikia
+    
+    else:
+        #pick new task
+        q_finished =  q & ( kl.mark == 100 )
+        count = db(q_finished).count()      
+        if count >= COUNT_PER_INTERVAL:
+            return None
+
+        # else
+        def pick_new_task():
+            # get already done/given tasks
+            q_user = kl.user_id==user_id
+            already_given = [x.task_key for x in db(q_user).select(kl.task_key) ]
+            # already_given_lessons = db(q_user).select(kl.lesson)
+
+            from plugin_introspect import lessons_menu
+            lessons = lessons_menu(return_plain=True)
+            # while True: # TODO maybe prevent repetition of examples
+            lesson = random.choice( lessons )
+            tasks = generate_exposed_functions_info(lesson)
+            task = random.choice( tasks.keys() )
+            task_key = lesson + '/' + task
+
+            record = kl.insert(
+                user_id=user_id,
+                
+                task_key=task_key,
+                lesson=lesson,
+                task=task,
+
+                scheduled_from=request.now,
+                scheduled_to=request.now+TIME_INTERVAL
+                
+            )
+            # if not task_key in already_given:
+            return record
+            # def_code = clean_task_code(tasks[task]['code'])
+            # task_name, docs, sample = prepare_sample_from_def(sample)
+            # return lesson, task_name, docs, sample
+            
+        return pick_new_task()
+
+
+
+# def demo_task():
 #     sample = """
 # n = 'ą'
 # for x in "[3, 5,  7]": # 123 
 #     suma += x  # ęąčę
 #     print( x, suma )
 #     """
-
     # task_key=lesson+'/'+task_name
 
+@auth.requires_login()
+# @auth.requires(lambda:request.client=='127.0.0.1' or auth.is_logged_in())
+def task():
+
     task_record = pick_task_record(auth.user_id) 
+
+    if task_record is None:
+        return CAT( "All tasks for current period are done :)", 
+                db( qs_current_tasks(auth.user_id) ).select()
+        )
 
     docs, sample = get_code_sample(task_record.lesson, task_record.task)
     # task_name, docs, sample = prepare_sample_from_def(sample)
@@ -279,7 +302,7 @@ def task():
     # if True:
     if user_code:
         
-        task_record.update( 
+        task_record.update_record( 
             user_code=user_code,
             mark=mark,
             tries_count=task_record.tries_count+1
@@ -294,14 +317,19 @@ def task():
         # )
     
     form = FORM(TEXTAREA(user_code, _name='user_code'), INPUT(_type='submit'))
-
+    if mark == 100:
+        form = ""
+        
+    
 
 
     return CAT(
         task_record.task, BR(), docs,
-        PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
+        # PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
+        PRE(XML(( highlighted(sample) ))),
         STYLE(get_styles()), 
-        SPAN(mistake, _class='mistake info'),
+        DIV("Pažymys: ", mark, _class='mark'),
+        DIV("Klaida: " *bool(mistake), mistake, _class='mistake_info'),
         form,
         # CODEMIRROR(user_code) 
         # BEAUTIFY(exposed_functions)
