@@ -60,9 +60,9 @@ def obfuscate(html, bla_words=['bla'],
         classes = "n o mi k ow nb p".split()
 
         bla_ = ' '+random.choice(bla_words)+' '
-        return '<span class="%s" style="margin:0; margin-left:-%s; color:transparent;">%s</span>' % (
+        return '<span class="%s" style=" margin-left:-%spx; color:transparent;">%s</span>' % (
             random.choice(classes),
-            8*len(bla_),
+            8*len(bla_)-5,
             bla_)
     found = None
     result = []
@@ -339,8 +339,7 @@ def task():
 
     if mark == 100:
         form = ""
-        CodeMirror_js = ""
-
+        
     return dict(content=CAT(
         task_record.task, BR(), docs,
         # PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
@@ -348,7 +347,11 @@ def task():
         STYLE(get_styles(), '.highlight > pre { background: #fbfbfb; }'),
         DIV("Pažymys: ", mark, _class='mark'),
         DIV("Klaida: " * bool(mistake), mistake, _class='mistake_info'),
-        form, CodeMirror_js
+        
+        BR(),
+        CAT("Perrašykite kodą (komentarų nereikia, o tarpus galit dėlioti, kaip patogu)", 
+        form, 
+        CodeMirror_js) * bool(form)
         # CODEMIRROR(user_code)
         # BEAUTIFY(exposed_functions)
     )
