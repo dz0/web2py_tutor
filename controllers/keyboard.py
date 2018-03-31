@@ -135,7 +135,9 @@ def highlight_mistake(token_nr, code_text):
 
 
 def check_mistakes(sample, user_code, return_mark=False):
+        # TODO: bėda su lietuviškais komentarais... 
 
+   
     def adapt(code):
 
         code = code.decode('utf-8')
@@ -146,6 +148,8 @@ def check_mistakes(sample, user_code, return_mark=False):
 
     user_code = adapt(user_code)
     sample = adapt(sample)
+
+
     original_user_code = user_code
     original_sample = sample
 
@@ -205,6 +209,8 @@ def qs_current_tasks(user_id=None):
         return q_time_interval
 
 def test_pick_task():
+    # TODO bėda su lesson05.../vykdymo_eiliskumas
+
     user_id = 1
     tasks = []
     for x in range(5):
@@ -227,7 +233,7 @@ def pick_new_task(user_id):
 
     from plugin_introspect import lessons_menu
     lessons = lessons_menu(return_plain=True)
-    lessons = [ x for x in lessons      if x.startswith ('lesson0') and 'matricos' not in x ]            # while True: # TODO maybe prevent repetition of examples
+    lessons = [ x for x in lessons      if x.startswith ('lesson0') and 'matricos' not in x  and 'intro' not in x ]            # while True: # TODO maybe prevent repetition of examples
     lesson = random.choice(lessons)
     tasks = generate_exposed_functions_info(lesson)
     task = random.choice(tasks.keys())
