@@ -23,7 +23,8 @@ def get_code_sample(lesson, task):
     #     sample_lines = sample.split("\n")
 
     #     for line in sample_lines 
-    return docs, sample
+    # return docs, sample
+    return docs, task_def
 
 
 # tutor = auth.requires_login(original_tutor)
