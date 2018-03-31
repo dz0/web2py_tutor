@@ -9,15 +9,20 @@ from plugin_introspect import tutor as original_tutor, menu, generate_exposed_fu
 import re
 from test_helper_4automation import my_tokenizer
 
+KL = db.keyboard_learn
 
 def clean_task_code(def_code):
-    return re.sub('###PLACEHOLDER.*', '', def_code).replace('return flush_print()', '')
+    return re.sub('###.*', '', def_code).replace('return flush_print()', '')
 
 
 def get_code_sample(lesson, task):
     functions = generate_exposed_functions_info(lesson)
     task_def = clean_task_code(functions[task]['code'])
     task_name, docs, sample = prepare_sample_from_def(task_def)
+    # def strip_metainstructions():
+    #     sample_lines = sample.split("\n")
+
+    #     for line in sample_lines 
     return docs, sample
 
 
@@ -190,25 +195,69 @@ def check_mistakes(sample, user_code, return_mark=False):
 
 
 def qs_current_tasks(user_id=None):
-    kl = db.keyboard_learn
     now = request.now
-    q_time_interval = (kl.scheduled_from < now) & (kl.scheduled_to > now)
+    q_time_interval = (KL.scheduled_from < now) & (KL.scheduled_to > now)
     if user_id:
-        q_user = kl.user_id == user_id
+        q_user = KL.user_id == user_id
         return q_user & q_time_interval
     else:
         return q_time_interval
 
+def test_pick_task():
+    user_id = 1
+    tasks = []
+    for x in range(5):
+        task = pick_new_task( user_id )
+        docs, code = get_code_sample(task.lesson, task.task)
+        tasks.append(  {task.task_key: [ docs,BR(), PRE(code) ]})
+
+    return CAT(
+        BEAUTIFY( tasks ), 
+        list_user_tasks( user_id )
+    )
+
+
+
+def pick_new_task(user_id):
+    # get already done/given tasks
+    q_user = KL.user_id == user_id
+    already_given = [x.task_key for x in db(q_user).select(KL.task_key)]
+    # already_given_lessons = db(q_user).select(KL.lesson)
+
+    from plugin_introspect import lessons_menu
+    lessons = lessons_menu(return_plain=True)
+    lessons = [ x for x in lessons      if x.startswith ('lesson0') and 'matricos' not in x ]            # while True: # TODO maybe prevent repetition of examples
+    lesson = random.choice(lessons)
+    tasks = generate_exposed_functions_info(lesson)
+    task = random.choice(tasks.keys())
+    task_key = lesson + '/' + task
+
+    record = KL.insert(
+        user_id=user_id,
+
+        task_key=task_key,
+        lesson=lesson,
+        task=task,
+
+        scheduled_from=request.now,
+        scheduled_to=request.now+TIME_INTERVAL
+
+    )
+    # if not task_key in already_given:
+    return record
+    # def_code = clean_task_code(tasks[task]['code'])
+    # task_name, docs, sample = prepare_sample_from_def(sample)
+    # return lesson, task_name, docs, sample
+
 
 def pick_task_record(user_id):
-    kl = db.keyboard_learn
 
     q = qs_current_tasks(user_id)
 
     # check unfinished
-    # print db(q)._select(kl.task_key)
+    # print db(q)._select(KL.task_key)
 
-    q_unfinished = q & (kl.mark != 100)
+    q_unfinished = q & (KL.mark != 100)
     count = db(q_unfinished).count()
     # if we have unfinished tasks - give last of them..
     if not db(q_unfinished).isempty():
@@ -216,45 +265,13 @@ def pick_task_record(user_id):
 
     else:
         # pick new task
-        q_finished = q & (kl.mark == 100)
+        q_finished = q & (KL.mark == 100)
         count = db(q_finished).count()
         if count >= COUNT_PER_INTERVAL:
             return None
 
-        # else
-        def pick_new_task():
-            # get already done/given tasks
-            q_user = kl.user_id == user_id
-            already_given = [x.task_key for x in db(
-                q_user).select(kl.task_key)]
-            # already_given_lessons = db(q_user).select(kl.lesson)
-
-            from plugin_introspect import lessons_menu
-            lessons = lessons_menu(return_plain=True)
-            # while True: # TODO maybe prevent repetition of examples
-            lesson = random.choice(lessons)
-            tasks = generate_exposed_functions_info(lesson)
-            task = random.choice(tasks.keys())
-            task_key = lesson + '/' + task
-
-            record = kl.insert(
-                user_id=user_id,
-
-                task_key=task_key,
-                lesson=lesson,
-                task=task,
-
-                scheduled_from=request.now,
-                scheduled_to=request.now+TIME_INTERVAL
-
-            )
-            # if not task_key in already_given:
-            return record
-            # def_code = clean_task_code(tasks[task]['code'])
-            # task_name, docs, sample = prepare_sample_from_def(sample)
-            # return lesson, task_name, docs, sample
-
-        return pick_new_task()
+        else:
+            return  pick_new_task(user_id)
 
 
 def list_user_tasks(user_id):
@@ -280,11 +297,10 @@ def task():
 
     sample = sample.strip(" \n\t")
 
-    kl = db.keyboard_learn
-    # id_query = (kl.task_key==task_key) & (kl.user_id==auth.user_id)
+    # id_query = (KL.task_key==task_key) & (KL.user_id==auth.user_id)
 
     # TODO
-    # time_interval = (kl.scheduled_from < request.now) & (request.now  < kl.scheduled_to)
+    # time_interval = (KL.scheduled_from < request.now) & (request.now  < KL.scheduled_to)
 
     # record = db(id_query).select().first()
 
@@ -346,8 +362,11 @@ def prepare_sample_from_def(orig_code):
     name = re.findall('^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
     code = unpack_def(code).strip()
     if code.startswith('"""'):
-        docs = re.findall('^"""(.*?)"""', code, re.MULTILINE)[0]
-        code = code[len(docs)+6:]
+        try:
+            docs = re.findall('^"""(.*?)"""', code, re.MULTILINE)[0]
+            code = code[len(docs)+6:]
+        except IndexError as e:
+            print ("ERR: %s \n %s" (e, code))
     else:
         docs = ""
     return name, docs, code
