@@ -151,7 +151,6 @@ auth.settings.login_after_registration = True
 
 db.define_table('learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None ),
-                    # Field('user_id', "integer", default= auth_user.id if ),
                     Field('lesson', 'string'),
                     Field('task', 'string'),
                     Field('task_key', 'string'),
@@ -176,9 +175,10 @@ db.define_table('keyboard_learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('scheduled_to', 'datetime', default=None, requires = IS_DATE(format=('%Y-%m-%d'))),
 
                 )
+KL = db.keyboard_learn
 from datetime import timedelta
-TIME_INTERVAL = timedelta(days=2)
-COUNT_PER_INTERVAL = 3
+TIME_INTERVAL = timedelta(days=1)
+COUNT_PER_INTERVAL = 2
 
 """
 from simplejson import loads, dumps 
