@@ -205,13 +205,13 @@ def test__pick_task():
 
     )
 
-def test__code_char_count():
-
-    lesson, task = "lesson02_py_sarasai_CRUD_CLI/elementu_numeravimas".split('/')
-    code = cached_exposed_functions(lesson, task)['code']
-    just_chars = hide_comments(adapt_code(code)).replace(" ", "")
-    chars_count = len(hide_comments(adapt_code(code)).replace(" ", ""))
-    return CAT( XML(highlighted(code)), PRE(just_chars),  chars_count )
+# def test__code_char_count():
+#
+#     lesson, task = "lesson02_py_sarasai_CRUD_CLI/elementu_numeravimas".split('/')
+#     code = cached_exposed_functions(lesson, task)['code']
+#     just_chars = hide_comments(adapt_code(code)).replace(" ", "")
+#     chars_count = len(hide_comments(adapt_code(code)).replace(" ", ""))
+#     return CAT( XML(highlighted(code)), PRE(just_chars),  chars_count )
 
 
 def pick_new_task(user_id):
@@ -340,8 +340,11 @@ def task():
 
     if mark == 100:
         form = ""
-        
-    return dict(content=CAT(
+
+    done_tasks_count = db((KL.user_id==auth.user_id) & (KL.mark==100)).count()
+    return dict(
+        done_tasks_count=done_tasks_count,
+        contents=CAT(
         "Tema: ", task_record.task, BR(), docs,
         # PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
         XML(sample_html),
