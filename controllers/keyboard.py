@@ -222,7 +222,10 @@ def pick_new_task(user_id):
 
     from plugin_introspect import lessons_menu
     lessons = lessons_menu(return_plain=True)
-    lessons = [ x for x in lessons      if x.startswith('lesson0') and 'matricos' not in x  and 'intro' not in x ]            # while True: # TODO maybe prevent repetition of examples
+    lessons = [ x for x in lessons    if
+                      (x.startswith('lesson0')    or x.startswith('lesson1'))
+                        and 'matricos' not in x          and 'intro' not in x
+                ]
 
 
     while True:
@@ -236,7 +239,7 @@ def pick_new_task(user_id):
         code = cached_exposed_functions(lesson, task)['code']
         chars_count = len(hide_comments(adapt_code(code)).replace(" ", ""))
         if chars_count <= CODE_CHARS_COUNT_LIMIT:
-        # or not task_key in already_given:
+        # or not task_key in already_given:          # TODO maybe prevent repetition of examples
             break
         else:
             logger.debug( "Skipped tas: too long (%s): %s ", chars_count, task_key )
