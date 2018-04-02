@@ -153,9 +153,9 @@ def filtravimas():
 
     print( "Didesni už vidurkį" )
 
-    for paz in Pazymiai:  ###PLACEHOLDER:--> ? paz in Pazymiai?
-        if paz > vidurkis:
-            print( paz ) ###PLACEHOLDER:--> print( ? )
+    for paz in Pazymiai:     # imam po pažymį  ###PLACEHOLDER:--> ? paz in Pazymiai?
+        if paz > vidurkis:   # žiūrim, ar jis tinka
+            print( paz )  # spausdinam ###PLACEHOLDER:--> print( ? )
 
     return flush_print()
 

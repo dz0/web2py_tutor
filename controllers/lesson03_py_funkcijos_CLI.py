@@ -95,8 +95,8 @@ def vykdymo_eiliskumas():
 @tutor(imitateCLI=True, flush_print=flush_print)
 def vykdymo_eiliskumas_test1():
     def add(a, b):
-        print( "vykdom add:", a, b )
-        return a+b
+        print( "vykdom add:", a, b )  # atspausdinam argumentus
+        return a+b   # apskaičiuojam ir grąžinam rezultatą
 
     def maximum(x, y):
         print( "vykdom maximum:", x, y )

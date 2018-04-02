@@ -28,12 +28,18 @@ def get_controller_code( c=None, app=None ):
 
 exposed_functions = {}  # for singleton
 
-def generate_exposed_functions_info(controller=None):
+def generate_exposed_functions_info(controller=None, force_reset=False):
     controller = controller or current.request.controller
     global exposed_functions
-    exposed_functions = getattr(current, 'exposed_functions', {} )
+    if force_reset:
+        exposed_functions = {}
+    else:
+        exposed_functions = getattr(current, 'exposed_functions', {} )
+    
     current.exposed_functions = exposed_functions
-    if not exposed_functions:
+    
+    if force_reset  or  not exposed_functions:
+
         full_file_code = get_controller_code(controller)
 
         for f in exposed_functions_names(controller):

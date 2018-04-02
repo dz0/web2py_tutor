@@ -6,3 +6,6 @@ sessions/**
 databases/**
 progress.log
 .vscode
+.hg
+.hgignore
+private/*.*

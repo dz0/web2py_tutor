@@ -11,21 +11,6 @@ from test_helper_4automation import my_tokenizer
 
 KL = db.keyboard_learn
 
-def clean_task_code(def_code):
-    return re.sub('###.*', '', def_code).replace('return flush_print()', '')
-
-
-def get_code_sample(lesson, task):
-    functions = generate_exposed_functions_info(lesson)
-    task_def = clean_task_code(functions[task]['code'])
-    task_name, docs, sample = prepare_sample_from_def(task_def)
-    # def strip_metainstructions():
-    #     sample_lines = sample.split("\n")
-
-    #     for line in sample_lines 
-    # return docs, sample
-    return docs, task_def
-
 
 # tutor = auth.requires_login(original_tutor)
 def tutor(*args, **kwargs):
@@ -53,7 +38,7 @@ def highlighted(code=""):
 def obfuscate(html, bla_words=['bla'],
               msg=u"        Aš matau, kad tu kopijuoji! ;)       "
               ):
-    bla_words = [x.decode('utf-8') for x in bla_words]
+    bla_words = [guarantee_unicode(x) for x in bla_words]
     bla_words.append(msg)
 
     # bla_words += ['bla']*len(bla_words)
@@ -86,23 +71,28 @@ def get_styles():
 
 
 def highlight_mistake(token_nr, code_text):
-    code_tokens = my_tokenizer(code_text)
+    code_invisible_comments = hide_comments(code_text)
+    code_tokens = my_tokenizer( code_invisible_comments  )
 
-    def get_token_place(token_nr_stop, ):
+    def get_token_place(token_nr_stop):
         place = 0
         for token_nr, token in enumerate(code_tokens):
-            for ch in token:
 
-                if token_nr == token_nr_stop:
-                    return place
+            while code_invisible_comments[place] in '\n\r\t ':  # skip spaces
+                place += 1 # increase cursor
 
-                if code_text[place] == ch:
-                    place += 1
-                else:
-                    return "ERR  @%s" % place
+            if token_nr == token_nr_stop:  # could be before inner for
+                return place
 
-            while code_text[place] in '\n\r\t ':  # skip spaces
-                place += 1
+            place += len(token) # increase cursor
+
+            # for ch in token:
+            #     # increase place only if
+            #     if code_invisible_comments[place] == ch:
+            #         place += 1
+            #     else:
+            #         return "ERR  @%s" % place
+
 
     # mistake_place = get_original_index(token_nr)
     mistake = code_tokens[token_nr]
@@ -137,21 +127,15 @@ def highlight_mistake(token_nr, code_text):
 def check_mistakes(sample, user_code, return_mark=False):
         # TODO: bėda su lietuviškais komentarais... 
 
-   
-    def adapt(code):
 
-        code = code.decode('utf-8')
-        code = code.replace('\r', '')
-        code = re.sub('#.*', '', code)  # strip comments
-
-        return code
-
-    user_code = adapt(user_code)
-    sample = adapt(sample)
-
+    user_code = adapt_code(user_code)
+    sample = adapt_code(sample)
 
     original_user_code = user_code
     original_sample = sample
+
+    user_code = hide_comments(user_code)
+    sample = hide_comments(sample)
 
     sample = my_tokenizer(sample)
     user_code = my_tokenizer(user_code)
@@ -208,19 +192,20 @@ def qs_current_tasks(user_id=None):
     else:
         return q_time_interval
 
-def test_pick_task():
-    # TODO bėda su lesson05.../vykdymo_eiliskumas
+def test__pick_task():
 
     user_id = 1
     tasks = []
-    for x in range(5):
+    for x in range(50):
         task = pick_new_task( user_id )
         docs, code = get_code_sample(task.lesson, task.task)
-        tasks.append(  {task.task_key: [ docs,BR(), PRE(code) ]})
+        tasks.append(  {task.task_key: [ docs, BR(), XML(highlighted(code)) ]})
 
     return CAT(
+        STYLE(get_styles()),
         BEAUTIFY( tasks ), 
-        list_user_tasks( user_id )
+        list_user_tasks( user_id ),
+
     )
 
 
@@ -235,7 +220,8 @@ def pick_new_task(user_id):
     lessons = lessons_menu(return_plain=True)
     lessons = [ x for x in lessons      if x.startswith ('lesson0') and 'matricos' not in x  and 'intro' not in x ]            # while True: # TODO maybe prevent repetition of examples
     lesson = random.choice(lessons)
-    tasks = generate_exposed_functions_info(lesson)
+    # tasks = generate_exposed_functions_info(lesson)
+    tasks = cached_exposed_functions(lesson)
     task = random.choice(tasks.keys())
     task_key = lesson + '/' + task
 
@@ -252,9 +238,7 @@ def pick_new_task(user_id):
     )
     # if not task_key in already_given:
     return record
-    # def_code = clean_task_code(tasks[task]['code'])
-    # task_name, docs, sample = prepare_sample_from_def(sample)
-    # return lesson, task_name, docs, sample
+
 
 
 def pick_task_record(user_id):
@@ -299,12 +283,6 @@ def task():
         return list_user_tasks(auth.user_id)
 
     docs, sample = get_code_sample(task_record.lesson, task_record.task)
-    # task_name, docs, sample = prepare_sample_from_def(sample)
-    # return lesson, task_name, docs, sample
-
-    sample = sample.strip(" \n\t")
-
-    # id_query = (KL.task_key==task_key) & (KL.user_id==auth.user_id)
 
     # TODO
     # time_interval = (KL.scheduled_from < request.now) & (request.now  < KL.scheduled_to)
@@ -365,18 +343,84 @@ def task():
     )
 
 
+"""       INTROSPECTION SAMPLES"""
+
+
+
+
+from pprint import pformat
+
+exposed_functions_by_lesson = {} # for singleton/cashe
+def cached_exposed_functions(lesson, task=None):
+    logger.debug( "get_code %s/%s" , lesson, task )
+    if not lesson in exposed_functions_by_lesson:
+        functions = generate_exposed_functions_info(lesson, force_reset=True)
+        # logger.debug("%s  functions: \n%s", lesson, pformat(functions, indent=4) )
+
+        exposed_functions_by_lesson[lesson] = functions
+    
+    logger.debug("exposed_functions_by_lesson: \n%s",  pformat(exposed_functions_by_lesson, indent=4) )
+    
+    if task is None:
+        return exposed_functions_by_lesson[lesson]
+    else: 
+        return exposed_functions_by_lesson[lesson][task]
+
+
+def clean_task_code_from_meta(def_code):
+    return  re.sub('###.*', '', def_code)  \
+            .replace('return flush_print().*', '') \
+            .strip(" \n\t")
+
+def guarantee_unicode(txt):
+    if not isinstance(txt, unicode):
+        txt = txt.decode('utf-8')
+    return txt
+
+def hide_comments(code):
+    """makes comments invisible
+    replaces with spaces (not just delete) -- this is needed for later place detection by token nr."""
+    def make_spaces(matchobj):
+        txt = matchobj.group(0)
+        return ' ' * len(txt)
+
+    code = re.sub('#.*$', make_spaces, code, flags=re.MULTILINE)  # strip comments
+    return code
+
+def adapt_code(code):
+
+    code = guarantee_unicode(code)
+    code = code.replace('\r', '')
+    code = clean_task_code_from_meta(code)
+
+    return code
+
+
+def get_code_sample(lesson, task):
+    # functions = generate_exposed_functions_info(lesson, force=True)
+    task_def = cached_exposed_functions(lesson, task)['code']
+    # task_def = clean_task_code(functions[task]['code'])
+    task_def = adapt_code(task_def)
+    task_name, docs, sample = prepare_sample_from_def(task_def)
+    # return docs, task_def
+    return docs, sample
+
+
+
 def prepare_sample_from_def(orig_code):
     # return "name", "docs", orig_code
 
     code = orig_code.strip()
     name = re.findall('^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
+
     code = unpack_def(code).strip()
+    docs = ""
     if code.startswith('"""'):
         try:
-            docs = re.findall('^"""(.*?)"""', code, re.MULTILINE)[0]
+            docs = re.findall('^\s*"""(.*?)"""', code, re.DOTALL)[0]
             code = code[len(docs)+6:]
         except IndexError as e:
-            print ("ERR: %s \n %s" (e, code))
-    else:
-        docs = ""
+            print ("ERR: %s \n %s" % (e, code))
+            logger.error(  "ERR: %s \n %s" % (e, code) )
+        
     return name, docs, code
