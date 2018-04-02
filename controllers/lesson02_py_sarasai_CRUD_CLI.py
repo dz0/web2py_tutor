@@ -147,7 +147,8 @@ def elementu_numeravimas_klaida():
 
 @tutor(imitateCLI=True)
 def filtravimas():
-
+    """atfiltruoja iš sąrašo didesnius už vidurkį"""
+    
     Pazymiai = [6, 9, 3, 7]
     vidurkis = sum( Pazymiai )/ len( Pazymiai )
 

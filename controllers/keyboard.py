@@ -384,7 +384,16 @@ def hide_comments(code):
         txt = matchobj.group(0)
         return ' ' * len(txt)
 
-    code = re.sub('#.*$', make_spaces, code, flags=re.MULTILINE)  # strip comments
+    # find simple comments
+    code = re.sub(r'(#.*$)', make_spaces, code, flags=re.MULTILINE)  # strip comments
+
+    # # find docstring
+    # code = re.sub(r'(?<=^def\s+.*?:\s*)"""[\s\S]*?"""', make_spaces, code, flags=re.DOTALL)
+
+    # replace multiline string
+    code = re.sub(r'(?<=[^\n])\s*"""[\s\S]*?"""', make_spaces, code)
+    code = re.sub(r"(?<=[^\n])\s*'''[\s\S]*?'''", make_spaces, code)
+
     return code
 
 def adapt_code(code):
@@ -399,25 +408,26 @@ def adapt_code(code):
 def get_code_sample(lesson, task):
     # functions = generate_exposed_functions_info(lesson, force=True)
     task_def = cached_exposed_functions(lesson, task)['code']
-    # task_def = clean_task_code(functions[task]['code'])
     task_def = adapt_code(task_def)
-    task_name, docs, sample = prepare_sample_from_def(task_def)
-    # return docs, task_def
-    return docs, sample
-
+    if lesson.endswith("_CLI"):
+        # hide def title and take docstring
+        task_name, docs, sample = prepare_sample_from_def(task_def)
+        return docs, sample
+    else:
+        return "", task_def
 
 
 def prepare_sample_from_def(orig_code):
     # return "name", "docs", orig_code
 
     code = orig_code.strip()
-    name = re.findall('^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
+    name = re.findall(r'^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
 
     code = unpack_def(code).strip()
     docs = ""
     if code.startswith('"""'):
         try:
-            docs = re.findall('^\s*"""(.*?)"""', code, re.DOTALL)[0]
+            docs = re.findall(r'^\s*"""(.*?)"""', code, re.DOTALL)[0]
             code = code[len(docs)+6:]
         except IndexError as e:
             print ("ERR: %s \n %s" % (e, code))
