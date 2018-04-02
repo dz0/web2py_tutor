@@ -218,7 +218,7 @@ def pick_new_task(user_id):
 
     from plugin_introspect import lessons_menu
     lessons = lessons_menu(return_plain=True)
-    lessons = [ x for x in lessons      if x.startswith ('lesson0') and 'matricos' not in x  and 'intro' not in x ]            # while True: # TODO maybe prevent repetition of examples
+    lessons = [ x for x in lessons      if x.startswith ('lesson1') and 'matricos' not in x  and 'intro' not in x ]            # while True: # TODO maybe prevent repetition of examples
     lesson = random.choice(lessons)
     # tasks = generate_exposed_functions_info(lesson)
     tasks = cached_exposed_functions(lesson)
@@ -309,13 +309,7 @@ def task():
             tries_count=task_record.tries_count+1
 
         )
-        # db.keyboard_learn.update_or_insert(  id_query,
-        #     lesson=lesson,
-        #     task=task_name,
-        #     task_key=task_key,
-        #     user_code=user_code,
-        #     mark=mark
-        # )
+
 
     form = FORM(TEXTAREA(user_code, _name='user_code',
                          _id='user_code'), INPUT(_type='submit'))
@@ -390,7 +384,7 @@ def hide_comments(code):
     # # find docstring
     # code = re.sub(r'(?<=^def\s+.*?:\s*)"""[\s\S]*?"""', make_spaces, code, flags=re.DOTALL)
 
-    # replace multiline string
+    # replace multiline string -- but only at line start  # TODO: don't know why it works also for non line-start
     code = re.sub(r'(?<=[^\n])\s*"""[\s\S]*?"""', make_spaces, code)
     code = re.sub(r"(?<=[^\n])\s*'''[\s\S]*?'''", make_spaces, code)
 
