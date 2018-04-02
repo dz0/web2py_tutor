@@ -387,9 +387,10 @@ def cached_exposed_functions(lesson, task=None):
 
 
 def clean_task_code_from_meta(def_code):
-    return  re.sub('###.*', '', def_code)  \
-            .replace('return flush_print().*', '') \
-            .strip(" \n\t")
+    result = re.sub('###.*$', '', def_code, flags=re.MULTILINE)
+    result = re.sub(r'\n\s*return flush_print().*$', '', result, flags=re.MULTILINE)
+    result = result.strip(" \n\t")
+    return result
 
 def guarantee_unicode(txt):
     if not isinstance(txt, unicode):
@@ -438,10 +439,8 @@ def get_code_sample(lesson, task):
 
 def prepare_sample_from_def(orig_code):
     # return "name", "docs", orig_code
-
     code = orig_code.strip()
     name = re.findall(r'^def\s+(.*?)\s*\(', code, re.MULTILINE)[0]
-
     code = unpack_def(code).strip()
     docs = ""
     if code.startswith('"""'):
