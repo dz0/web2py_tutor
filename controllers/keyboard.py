@@ -12,25 +12,6 @@ from datetime import date
 
 KL = db.keyboard_learn
 
-
-# tutor = auth.requires_login(original_tutor)
-def tutor(*args, **kwargs):
-    """decorator to ask login for taks"""
-
-    if request.function == 'index' \
-            or not exposed_functions[request.function]['is_task']:
-        return original_tutor(*args, **kwargs)
-
-    # ask login for tasks
-    if auth.is_logged_in():
-        return original_tutor(*args, **kwargs)
-    else:
-        next = auth.here()
-        session.flash = response.flash = "užduoties atlikimui reikia prisijungti"
-        return call_or_redirect(auth.settings.on_failed_authentication,
-                                auth.settings.login_url + '?_next=' + urllib.quote(next))
-
-
 def highlighted(code=""):
     result = highlight(code, PythonLexer(), HtmlFormatter(linenos=False))
     return result
@@ -347,14 +328,28 @@ def task():
         contents=CAT(
         "Tema: ", task_record.task, BR(), docs,
         # PRE(XML(obfuscate( highlighted(sample), bla_words=sample.split() ))),
-        XML(sample_html),
-        STYLE(get_styles(), '.highlight > pre { background: #fbfbfb; }'),
+
+
+        TABLE(
+            TR(["", "", "Kodo rezultatas: "]),
+            TR(
+                TD(
+                    XML(sample_html),
+                    STYLE(get_styles(), '.highlight > pre { background: #fbfbfb; }'),
+                ),
+                TD(""),
+                TD(
+                    LOAD( c=task_record.lesson, f=task_record.task, vars={"plain":""}, ajax=True, ajax_trap=True)
+                ),
+            )
+        ),
+
         DIV("Atlikta: %s%%" % mark, _class='mark'),
         DIV("Klaida: ", mistake, _class='mistake_info') if mistake else B(A("Kita užduotis", _href="")),
-        
+
         BR(),
         CAT("Perrašykite kodą (komentarų rašyt nereikia, o tarpus galit dėlioti, kaip patogu)",
-        form, 
+        form,
         CodeMirror_js) * bool(form)
         # CODEMIRROR(user_code)
         # BEAUTIFY(exposed_functions)
