@@ -46,7 +46,7 @@ def pivotize_test():
     
     
 @auth.requires_login()
-def tutor_dashboard():
+def tutor():
     if auth.user_id != 1:
         return "Needs Teacher rights"
     # from plugin_joins_builder import build_joins
@@ -87,4 +87,18 @@ def tutor_dashboard():
     ) 
     # todo: use pivottable , ex https://github.com/espern/pivottable
     
-    
+
+@auth.requires_login()
+def keyboard():
+    if auth.user_id != 1:
+        return "Needs Teacher rights"
+    KL = db.keyboard_learn
+    count_tasks = KL.user_id.count()
+    sum_tries = KL.tries_count.sum()
+
+    rows = db(KL.mark==100).select(db.auth_user.first_name,
+                                   count_tasks, sum_tries, groupby=KL.user_id,
+                                     join=db.auth_user.on(KL.user_id == db.auth_user.id),
+                                   orderby=~count_tasks
+                                   )
+    return rows
