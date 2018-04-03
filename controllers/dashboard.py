@@ -30,7 +30,8 @@ def pivotize(data, rows_var, cols_var, main_var):
     # return data[0][cols_var]
     # return UL(rows)
 
-            
+
+
 def pivotize_test():
     rows = db( None ).select(
         db.auth_user.first_name, db.learn.task_key, db.learn.mark, db.learn.tries_count,
@@ -90,8 +91,8 @@ def tutor():
 
 @auth.requires_login()
 def keyboard():
-    if auth.user_id != 1:
-        return "Needs Teacher rights"
+    # if auth.user_id != 1:
+    #     return "Needs Teacher rights"
     KL = db.keyboard_learn
     count_tasks = KL.user_id.count()
     sum_tries = KL.tries_count.sum()
