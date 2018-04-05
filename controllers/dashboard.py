@@ -102,4 +102,8 @@ def keyboard():
                                      join=db.auth_user.on(KL.user_id == db.auth_user.id),
                                    orderby=~count_tasks
                                    )
-    return rows
+    return CAT(
+        SQLTABLE(rows),
+        A("užduotis", _href=URL('keyboard', 'task'))
+
+    )

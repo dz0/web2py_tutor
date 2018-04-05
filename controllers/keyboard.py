@@ -17,6 +17,9 @@ def highlighted(code=""):
     return result
 
 
+def get_styles():
+    return HtmlFormatter().get_style_defs('.highlight')
+
 def obfuscate(html, bla_words=['bla'],
               msg=u"        Aš matau, kad tu kopijuoji! ;)       "
               ):
@@ -43,9 +46,6 @@ def obfuscate(html, bla_words=['bla'],
 
     return ''.join(result)
 
-
-def get_styles():
-    return HtmlFormatter().get_style_defs('.highlight')
 
 
 """Mistakes"""
@@ -270,6 +270,8 @@ def list_user_tasks(user_id):
     return CAT("Visos šios dienos užduotys atliktos. Lauksime ryt :)",
         UL( *rows )
         )
+
+
 
 
 @auth.requires_login()
