@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import random
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
-
 
 from test_helper_4automation import my_tokenizer
-from datetime import date
+
 
 KL = db.keyboard_learn
 set_LearnTable(KL)
 
-def highlighted(code=""):
-    result = highlight(code, PythonLexer(), HtmlFormatter(linenos=False))
-    return result
-
-
-def get_styles():
-    return HtmlFormatter().get_style_defs('.highlight')
 
 def obfuscate(html, bla_words=['bla'],
               msg=u"        Aš matau, kad tu kopijuoji! ;)       "
@@ -160,22 +149,8 @@ def check_mistakes(sample, user_code, return_mark=False):
 
 
 
-def test__pick_task():
-
-    user_id = 1
-    tasks = []
-    for x in range(5):
-        task = pick_new_task( user_id )
-        docs, code = get_code_sample(task.lesson, task.task)
-        chars_count =  len( hide_comments( adapt_code(code) ).replace(" ", "") )
-        tasks.append(  {task.task_key: [ docs, BR(), XML(highlighted(code)), BR(), chars_count ]})
-
-    return CAT(
-        STYLE(get_styles()),
-        BEAUTIFY( tasks ), 
-        list_user_tasks( user_id ),
-
-    )
+def _test__pick_task():
+    return test__pick_task()
 
 # def test__code_char_count():
 #
