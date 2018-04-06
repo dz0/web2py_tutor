@@ -66,13 +66,14 @@ def _kintamieji():
 @tutor(imitateCLI=True)
 def money_increase():
 
+    # pradžioj turim 99 pinigus
     money = 99
     print( money )
 
-    money = money + 1
+    money = money + 1   # padidinam money 1 pinigu :)
     print( money )
 
-    money = money * 2 ###PLACEHOLDER:--> money = ? ? 2
+    money = money * 2 # padidinam money 2 kartus ###PLACEHOLDER:--> money = ? ? 2
     print( money )
 
     return flush_print()

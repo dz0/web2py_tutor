@@ -178,11 +178,35 @@ db.define_table('keyboard_learn',  # todo -- change to "plugin_tutor_learn" ?
                     Field('scheduled_to', 'datetime', default=None, requires = IS_DATE(format=('%Y-%m-%d'))),
 
                 )
-KL = db.keyboard_learn
+
 TIME_INTERVAL = timedelta(days=1)
 COUNT_PER_INTERVAL = 2
 
 CODE_CHARS_COUNT_LIMIT = 250
+
+
+
+##########################
+
+db.define_table('scatter_learn',  # todo -- change to "plugin_tutor_learn" ?
+                Field('user_id', db.auth_user, default=auth.user_id if auth.is_logged_in() else None),
+                Field('lesson', 'string'),
+                Field('task', 'string'),
+                Field('task_key', 'string'),
+
+                Field('placeholders', 'json'),
+                Field('responses', 'json'),  # what was entered into placeholders
+                Field('evaluations', 'json'),
+
+                Field('mark', 'integer'),  # in percent
+                Field('tries_count', 'integer', default=0),
+
+                Field('submitted_on', 'datetime', default=request.now),
+                Field('scheduled_from', 'datetime', default=date.today, requires=IS_DATE(format=('%Y-%m-%d'))),
+                Field('scheduled_to', 'datetime', default=None, requires=IS_DATE(format=('%Y-%m-%d')))
+
+
+                )
 
 """
 from simplejson import loads, dumps 

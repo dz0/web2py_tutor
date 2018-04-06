@@ -1,0 +1,83 @@
+{{ #extend 'layout.html'}} {{block head}} {{super}} {{include 'web2py_ajax.html'}}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> {{#include 'codemirror_head.html'}}
+
+<script>
+    $(function () {
+        $(".draggable").draggable({
+            revert: function(valid) {
+                if(!valid) {
+                    //Dropped outside of valid droppable
+                    console.log('bla');
+                }
+            }
+        });
+        
+
+
+        $(".droppable").droppable({
+            tolerance: "pointer", // http://api.jqueryui.com/droppable/#option-tolerance
+            hoverClass: "onover",
+            drop: function (event, ui) {
+                console.log("drop");
+                $(this)
+                    .addClass("filled")
+                    .next()
+                    .prop('value', $(ui.draggable).text());
+               
+                // var d = $(ui.draggable).detach();
+                
+                /*
+                $(this).append(  
+                    $(ui.draggable)  
+                       //.css({'float':'left','display':'block'} )
+                 );
+                 */
+
+                
+                $(ui.draggable).position({
+                    my: "left",
+                    at: "left",
+                    of: $(this)
+                  });
+                
+            }, 
+            out: function( event, ui ) {
+                $(this).removeClass("filled").
+                        next().prop('value', '');
+                
+            }
+        });
+
+
+    });
+
+    // https://stackoverflow.com/a/9879788/4217317
+//    # http://jsfiddle.net/vjGY4/152/
+//    # https://stackoverflow.com/questions/9317293/jquery-draggable-event-when-dropped-outside-of-parent-div
+//    # maybe https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_ondragenter
+
+</script>
+
+
+<style>
+    .filled {
+        border: 1px silver solid;
+    }
+
+    .droppable {
+        background-color: yellow;
+        width: 150px;
+        height: 50px;
+        padding: 0.5em;
+        float: left;
+        margin: 10px;
+    }
+    .onover{
+        background-color: #ffaa00;
+    }
+</style>
+{{end}}
+
+<div style="float:right">{{=auth.user.first_name}} yra surinkęs {{=B(done_tasks_count() )}} {{=A('taškus', _href=URL('dashboard', 'scatter'))}}</div>
+
+{{=contents}} {{if request.is_local:}} {{=response.toolbar()}} {{pass}}

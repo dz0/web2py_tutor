@@ -1,12 +1,30 @@
 from plugin_introspect import tutor as original_tutor, menu, generate_exposed_functions_info,  unpack_def, CODEMIRROR
 import re
 import random
+from datetime import date
 
 LearnTable = None # LearningTable
 
 def set_LearnTable(LT):
     global LearnTable
     LearnTable = LT
+
+
+########### code highlight
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
+def highlighted(code=""):
+    result = highlight(code, PythonLexer(), HtmlFormatter(linenos=False))
+    return result
+
+
+def get_styles():
+    return HtmlFormatter().get_style_defs('.highlight')
+
+
+########### pick task
 
 def pick_new_task(user_id):
     # get already done/given tasks
@@ -71,7 +89,7 @@ def pick_task_record(user_id):
     # check unfinished
     # print db(q)._select(LearnTable.task_key)
 
-    q_unfinished = q & (LearnTable.mark != 100)
+    q_unfinished = q & ((LearnTable.mark != 100) | (LearnTable.mark == None))
     count = db(q_unfinished).count()
     # if we have unfinished tasks - give last of them..
     if not db(q_unfinished).isempty():
@@ -85,7 +103,7 @@ def pick_task_record(user_id):
             return None
 
         else:
-            return  pick_new_task(user_id, LearnTable)
+            return  pick_new_task(user_id)
 
 
 def list_user_tasks(user_id):
@@ -98,6 +116,25 @@ def list_user_tasks(user_id):
 def  done_tasks_count():
     result = db((LearnTable.user_id==auth.user_id) & (LearnTable.mark==100)).count()
     return result
+
+
+def test__pick_task():
+
+    user_id = 1
+    tasks = []
+    for x in range(5):
+        task = pick_new_task( user_id )
+        docs, code = get_code_sample(task.lesson, task.task)
+        chars_count =  len( hide_comments( adapt_code(code) ).replace(" ", "") )
+        tasks.append(  {task.task_key: [ docs, BR(), XML(highlighted(code)), BR(), chars_count ]})
+
+    return CAT(
+        STYLE(get_styles()),
+        BEAUTIFY( tasks ),
+        list_user_tasks( user_id ),
+
+    )
+
 
 """       INTROSPECTION SAMPLES"""
 
