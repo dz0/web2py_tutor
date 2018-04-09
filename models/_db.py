@@ -182,7 +182,7 @@ db.define_table('keyboard_learn',  # todo -- change to "plugin_tutor_learn" ?
 TIME_INTERVAL = timedelta(days=1)
 COUNT_PER_INTERVAL = 2
 
-CODE_CHARS_COUNT_LIMIT = 250
+CODE_CHARS_COUNT_LIMIT = 400
 
 
 

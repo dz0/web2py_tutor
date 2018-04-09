@@ -35,9 +35,23 @@ def pick_new_task(user_id):
 
     from plugin_introspect import lessons_menu
     lessons = lessons_menu(return_plain=True)
-    lessons = [ x for x in lessons    if
-                      (x.startswith('lesson0')    or x.startswith('lesson1'))
-                        and 'matricos' not in x          and 'intro' not in x
+    
+    def match_name(name, ends="", starts="", contains=""):
+        for end in ends.split():
+            if name.endswith(end):   return True
+        
+        for start in starts.split():
+            if name.startswith(start):  return True
+        
+        for fragment in contains.split():
+            if fragment in name:    return True
+
+
+    lessons = [ x for x in lessons    
+                if 
+                    match_name(x, ends="skelbimai") # speliones quick_examples
+                    # or match_name(x, starts="lesson0 lesson1") 
+                    # and not match_name(x, contains="matricos intro")
                 ]
 
 
