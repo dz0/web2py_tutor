@@ -223,3 +223,4 @@ for field in ['responses', 'evaluations']:  # todo - maybe not needed?
 from gluon import current
 current.db = db
 current.auth = auth
+current.HTTP = HTTP

@@ -249,6 +249,9 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=Fals
 
 
         except Exception as e:
+            if isinstance(e, current.HTTP):
+                raise e
+
             # content = repr( e )
             tb_str = traceback.format_exc()
             lines = tb_str.split("\n")
