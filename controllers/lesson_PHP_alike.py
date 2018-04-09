@@ -13,5 +13,9 @@ def pages():
     if request.args:   
         page = request.args[0]  # could adapt another page extension/ending here 
     else: 
-        page = 'start.html'    
+        return DIV("No page found, please choose :",  # could have default or so..
+                UL( A('one.html', _href='one.html') , 
+                    A('two.html', _href='two.html') , 
+                  )
+                )    
     return response.render( 'pages/'+page, {} ) # we just pick the view according to given page 
