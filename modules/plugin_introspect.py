@@ -280,7 +280,7 @@ def tutor(f=None, extra_files=None, inject_tutor_as_block=False, imitateCLI=Fals
                 fpath = apath('%s/%s' % (request.application, fname), r=request)
                 with open(fpath) as file:
                     code = file.read()
-                    extra_codes.append( CAT(BR(), SPAN(fname), CODEMIRROR(code, task_key="extra")) ) # TODO maybe refactro task_key usage
+                    extra_codes.append( CAT(BR(), SPAN(fname), CODEMIRROR(code, task_key="extra_"+fname)) ) # TODO maybe refactro task_key usage
 
 
             task_code = CAT( task_code, *extra_codes )
