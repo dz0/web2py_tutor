@@ -8,7 +8,7 @@ db.define_table('categories',
 # Skelbimai
 db.define_table('posts', 
         Field('author', db.auth_user, 
-                    default=auth.user.id,  # reikia, kad naudotojas būtų prisijungęs 
+                    default=auth.user.id if auth.user else None,  # reikia, kad naudotojas būtų prisijungęs 
                     writable=False,  # kad neleistų keisti autoriaus
             ),
         Field('title', 'string'),
