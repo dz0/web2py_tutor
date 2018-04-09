@@ -1,0 +1,15 @@
+{{extend 'layout.html'}}
+
+<h1>Hello {{="World"}}</h1> 
+    
+You are here for the 
+{{
+    session.cnt = (session.cnt or 0) + 1 
+    =session.cnt
+}}
+time.
+    
+<br/>
+<hr/>
+
+go to {{=A("page two", _href="two.html")}}

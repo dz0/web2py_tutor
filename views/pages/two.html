@@ -1,0 +1,39 @@
+{{extend 'layout.html'}}
+
+
+{{ if 'reset' in request.vars:  session.clear();  pass }}
+
+<h1> Hello, {{=session.user_name or "Anonymous"}} </h1>
+
+{{  if session.user_name: 
+    # indentation doesn't matter
+    =A("Forget me", _href="?reset")  
+    # pass explicitly closes the block (instead of indentation) 
+pass 
+}}
+
+
+{{ if not 'user_name' in session  : 
+  form=FORM("Your name",
+              INPUT(_name='user_name', requires=IS_NOT_EMPTY()),
+              INPUT(_value='OK', _type='submit'),
+               _action="two.html"
+              )
+
+  form.process()  # validate inputs
+
+    if form.accepted:
+        session.user_name = form.vars.user_name
+    else:
+        response.write(form)  # display form
+    pass # ends submission processing
+
+pass    # ends user name checking
+}}
+
+
+
+
+<hr>
+Request vars:
+{{=BEAUTIFY(request.vars)}}
