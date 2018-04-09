@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Web2Py pagal puslapio URL iškviečia funkciją atitinkamame faile ("controller"'yje)."""
 
-from plugin_introspect import tutor, menu
-
+from plugin_introspect import tutor, menu as tutor_menu
 
 def index( ):
     response.view = 'default/index.html'
     response.title = "Temos"
-    return dict(content=menu())
+    return dict(content=tutor_menu())
 
 
 @tutor(extra_files=['models/chat.py'])
