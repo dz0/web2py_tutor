@@ -62,14 +62,18 @@ def check_can_edit():
     /skelbimai/default/post/<id>/edit -- konkretaus post'o redagavimas
     /skelbimai/default/post//edit  -- kuriam naują post'ą
     """
-    post_id = request.args(0, cast=int) # imam 0-inį argumentą ir jį paverčiam skaičium (jei neranda - None)
+    try:  
+        id = int(request.args[0])   # jei yra ID
+    except:    
+        id=""   
+
     edit = request.args(1) # lenkti skliaustai, jei neranda index'o grąžina None
     
     can_edit = False  # default'inė reikšmė
     
     if auth.is_logged_in():  # jeigu yra prisijungęs user'is 
-        if post_id: # jeigu jau yra skelbimas
-            if auth.user.id == db.posts[post_id].author:  # ar  dabartinis user'is  yra skelbimo autorius 
+        if id: # jeigu jau yra skelbimas
+            if auth.user.id == db.posts[id].author:  # ar  dabartinis user'is  yra skelbimo autorius 
 
                 can_edit = edit=='edit'  # ar norima redaguoti
         
