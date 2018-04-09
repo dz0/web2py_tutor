@@ -10,14 +10,14 @@ def index( ):
     response.title = "Temos"
     return dict(content=tutor_menu())
 
-@tutor(  )
+#@tutor(  )
 def fill_cat():
     import random
     for x in db(db.posts).select():
         x.update_record(category=random.randint(1, 3))
     redirect(URL('posts'))
 
-@tutor( extra_files=['models/skelbimai.py'] )
+#@tutor( extra_files=['models/skelbimai.py'] )
 def populate():
     if not request.is_local:  #apsauga, kad viešai pahost'inus negalėtų nieks generuot fake duomenų
         return "localhost only"
@@ -32,7 +32,7 @@ def populate():
     return BEAUTIFY( db( db[table] ).select() )    # grąžinam lentelės duomenis
 
 
-@tutor( extra_files=['models/skelbimai.py'] )
+#@tutor( extra_files=['models/skelbimai.py'] )
 def posts():
     """ Skelbimų sąrašas 
     /skelbimai/default/posts
@@ -50,11 +50,11 @@ def posts():
                 for x in rows
             ])
     
-    new =  A( "..new..",  _class='btn btn-warning', _href='post//edit') 
+    new =  A( "..new..",  _class='btn btn-warning', _href=URL('post', args=['', 'edit']) ) 
 
     return CAT(rows, new)
 
-@tutor
+#@tutor
 def check_can_edit():
     """ Patikrina, ar leisim redaguoti (iškviečiamas iš post):
     priklausomai nuo URL pabaigos (request.args):
@@ -82,7 +82,7 @@ def check_can_edit():
 
     return can_edit
 
-@tutor( extra_files=['models/skelbimai.py'] )
+#@tutor( extra_files=['models/skelbimai.py'] )
 def post():
     """ Vieno skelbimo reikalai - priklausomai nuo URL pabaigos (request.args):
     /skelbimai/default/post/<id> -- konkretus post'as
@@ -116,7 +116,7 @@ def post():
     return CAT( form, edit_link )
 
 
-@tutor( extra_files=['models/skelbimai.py'] )
+#@tutor( extra_files=['models/skelbimai.py'] )
 def search():
     cat_title = request.args(0)
     search_form = SQLFORM.factory(    # kategorijų pasirinkimo forma

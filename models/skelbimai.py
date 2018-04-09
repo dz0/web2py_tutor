@@ -4,6 +4,7 @@ db.define_table('categories',
         Field('title', 'string')
 )
 
+
 # Skelbimai
 db.define_table('posts', 
         Field('author', db.auth_user, 
@@ -16,5 +17,3 @@ db.define_table('posts',
         Field('time_', 'datetime', default=request.now)  # request.now - užklausos laikas
 )
 
-db.categories._format = '%(title)s' # nurodo, kaip standartiškai atvaizduoti 
-                                    # susietą kategoriją (vietoj ID skaičiuko - pavadinimas) 
