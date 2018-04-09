@@ -6,7 +6,7 @@
 {{include 'codemirror_head.html'}}
 {{end}}
 
-<div style="float:right">{{=auth.user.first_name}} yra surinkęs {{=B(done_tasks_count)}} taškus</div>
+<div style="float:right">{{=auth.user.first_name}} yra surinkęs {{=B(done_tasks_count)}}  {{=A('taškus', _href=URL('dashboard', 'keyboard'))}}</div>
 
 {{=contents}}
 
